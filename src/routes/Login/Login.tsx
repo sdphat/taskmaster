@@ -9,17 +9,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorMessage } from "@hookform/error-message";
 import FormInputError from "../../components/FormInputError";
 import axios, { AxiosError, HttpStatusCode } from "axios";
-
-interface LoginInput {
-  email: string;
-  password: string;
-}
+import Link from "../../components/Link";
 
 const schema = z.object({
-  email: z.string().email({ message: "Email is not correctly formatted" }),
-
-  password: z.string().min(1, { message: "Password field in required" }),
+  email: z
+    .string()
+    .min(1, { message: "Email field is required" })
+    .email({ message: "Email is not correctly formatted" }),
+  password: z.string().min(1, { message: "Password field is required" }),
 });
+
+type LoginInput = z.infer<typeof schema>;
 
 const Login = () => {
   const {
@@ -43,7 +43,10 @@ const Login = () => {
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         if (err.response?.status === HttpStatusCode.Unauthorized) {
-          setError("root", { message: "Login failed. Please check again.", type: "custom" });
+          setError("root", {
+            message: "Login failed. Please check again.",
+            type: "custom",
+          });
         }
       }
     }
@@ -96,7 +99,6 @@ const Login = () => {
             <button
               className="bg-blue-700 text-white px-1 py-2 rounded-sm w-full mt-6 active:bg-blue-800"
               type="submit"
-
             >
               Continue
             </button>
@@ -118,6 +120,9 @@ const Login = () => {
           </div>
         </div>
         <div className="pb-12"></div>
+        <Link className="block mx-auto w-max" to="/register">
+          Don't have an account? Register here
+        </Link>
       </div>
     </div>
   );
