@@ -42,6 +42,8 @@ const App = () => {
         <button>Your work</button>
         <button>Projects</button>
         <Button>Create</Button>
+
+        
       </div>
       <div
         className={`w-64 border-2 border-t-0 border-gray-200 h-full overflow-hidden ${
