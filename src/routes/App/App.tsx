@@ -5,16 +5,37 @@ import FlashlightFill from "remixicon-react/FlashlightFillIcon";
 import MenuLine from "remixicon-react/MenuLineIcon";
 import appIconWithText from "../../assets/app-icon-with-text.svg";
 import NavLink from "./NavLink";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../components/Button";
+import axiosInstance from "../../Api/axios";
+import { AxiosError, HttpStatusCode } from "axios";
+import { useNavigate } from "react-router-dom";
 
 const App = () => {
   const [openSidebar, setOpenSidebar] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    async function checkIsLogin() {
+      try {
+        await axiosInstance.get("/auth/profile");
+      } catch (err) {
+        if (err instanceof AxiosError) {
+          if (err.response?.status === HttpStatusCode.Unauthorized) {
+            navigate({ pathname: "/login" }, { replace: true });
+          }
+        }
+      }
+    }
+
+    checkIsLogin();
+  }, [navigate]);
+
   return (
     <div className="h-screen flex flex-col">
       <div className="flex items-center w-full gap-x-4 px-4 py-4 border-2 border-gray-200">
         <button onClick={() => setOpenSidebar(!openSidebar)}>
-          {openSidebar ? <Menu2LineIcon size={30} /> : <MenuLine  size={30} />}
+          {openSidebar ? <Menu2LineIcon size={30} /> : <MenuLine size={30} />}
         </button>
         <img className="ml-2" src={appIconWithText} alt="" />
         <div className="flex-1"></div>

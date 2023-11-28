@@ -1,20 +1,21 @@
+import { ErrorMessage } from "@hookform/error-message";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError, HttpStatusCode } from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import axiosInstance from "../../Api/axios";
 import appIcon from "../../assets/app-icon-with-text.svg";
 import googleIcon from "../../assets/google-icon.svg";
 import FormField from "../../components/FormField";
 import FormInput from "../../components/FormInput";
-import FormLabel from "../../components/FormLabel";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ErrorMessage } from "@hookform/error-message";
 import FormInputError from "../../components/FormInputError";
-import axios, { AxiosError, HttpStatusCode } from "axios";
+import FormLabel from "../../components/FormLabel";
 import Link from "../../components/Link";
-import { useNavigate } from "react-router-dom";
 
 const isStrongPassword = (password: string) => {
   return (
-    // Check lowercase presence 
+    // Check lowercase presence
     /[a-z]+/.test(password) &&
     // Check uppercase presence
     /[A-Z]+/.test(password) &&
@@ -84,7 +85,7 @@ const Register = () => {
     ...data
   }) => {
     try {
-      await axios.post("http://localhost:3000/auth/register", data);
+      await axiosInstance.post("/auth/register", data);
       navigate({ pathname: "/app" }, { replace: true });
     } catch (err: unknown) {
       if (err instanceof AxiosError) {

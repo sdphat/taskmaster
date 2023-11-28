@@ -1,14 +1,16 @@
+import { ErrorMessage } from "@hookform/error-message";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError, HttpStatusCode } from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import axiosInstance from "../../Api/axios";
 import appIcon from "../../assets/app-icon-with-text.svg";
 import googleIcon from "../../assets/google-icon.svg";
 import FormField from "../../components/FormField";
 import FormInput from "../../components/FormInput";
-import FormLabel from "../../components/FormLabel";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ErrorMessage } from "@hookform/error-message";
 import FormInputError from "../../components/FormInputError";
-import axios, { AxiosError, HttpStatusCode } from "axios";
+import FormLabel from "../../components/FormLabel";
 import Link from "../../components/Link";
 
 const schema = z.object({
@@ -33,13 +35,12 @@ const Login = () => {
     reValidateMode: "onSubmit",
   });
 
+  const navigate = useNavigate();
+
   const onSubmit: SubmitHandler<LoginInput> = async (data) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/auth/login",
-        data
-      );
-      console.log(response.data);
+      await axiosInstance.post("/auth/login", data);
+      navigate("/app", { replace: true });
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         if (err.response?.status === HttpStatusCode.Unauthorized) {
