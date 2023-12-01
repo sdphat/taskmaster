@@ -6,6 +6,8 @@ import Login from "./routes/Login/Login.tsx";
 import Register from "./routes/Register/Register.tsx";
 import App from "./routes/App/App.tsx";
 import { QueryClient, QueryClientProvider } from "react-query";
+import BoardPage from "./routes/App/Board/BoardPage.tsx";
+import IssuesPage from "./routes/App/Board/Issues/IssuesPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +24,18 @@ const router = createBrowserRouter([
       {
         path: "/app",
         element: <App />,
+        children: [
+          {
+            path: "board",
+            element: <BoardPage />,
+            children: [
+              {
+                path: ":id",
+                element: <IssuesPage />,
+              },
+            ],
+          },
+        ],
       },
     ],
   },

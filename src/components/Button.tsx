@@ -1,12 +1,29 @@
 import tw from "tailwind-styled-components";
 
-const Button = tw.button`        
-    bg-blue-700 
-    text-white 
-    px-3
-    py-2
+export type ButtonVariant = "primary" | "secondary" | "ghost";
+export type ButtonShape = "square" | "rect";
+
+export interface ButtonProps {
+  $variant?: ButtonVariant;
+  $shape?: ButtonShape;
+}
+
+const buttonVariantClassNames: Record<ButtonVariant, string> = {
+  primary: "bg-blue-700 text-white active:bg-blue-800",
+  ghost: "hover:bg-gray-200 active:bg-gray-400",
+  secondary: "",
+};
+
+const buttonShapeClassNames: Record<ButtonShape, string> = {
+  rect: "px-3 py-2",
+  square: "p-2",
+};
+
+const Button = tw.button<ButtonProps>`    
     rounded-md
-    active:bg-blue-800
+    transition-all
+    ${(p) => buttonVariantClassNames[p.$variant ?? "primary"]}
+    ${(p) => buttonShapeClassNames[p.$shape ?? "rect"]}
 `;
 
 export default Button;

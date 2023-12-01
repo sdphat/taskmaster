@@ -1,24 +1,17 @@
 import { AxiosError, HttpStatusCode } from "axios";
 import { useRef, useState } from "react";
 import { useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
-import FileCopyLine from "remixicon-react/FileCopyLineIcon";
-import FlashlightFill from "remixicon-react/FlashlightFillIcon";
-import Menu2LineIcon from "remixicon-react/Menu2LineIcon";
-import MenuLine from "remixicon-react/MenuLineIcon";
-import Settings4Line from "remixicon-react/Settings4LineIcon";
+import { Outlet, useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axios";
 import appIconWithText from "../../assets/app-icon-with-text.svg";
 import googleIcon from "../../assets/google-icon.svg";
 import Button from "../../components/Button";
 import ROUTES from "../../constants/routes";
 import { BriefProfile } from "../../types/BriefProfile";
-import AccountDropdownItem from "./AccountDropdownItem";
-import AccountDropdownSection from "./AccountDropdownSection";
-import NavLink from "./NavLink";
+import AccountDropdownItem from "./Board/AccountDropdownItem";
+import AccountDropdownSection from "./Board/AccountDropdownSection";
 
 const App = () => {
-  const [openSidebar, setOpenSidebar] = useState(true);
   const navigate = useNavigate();
   const navBarRef = useRef<HTMLDivElement>(null);
   const [openAccountDropdown, setOpenAccountDropdown] = useState(false);
@@ -54,9 +47,6 @@ const App = () => {
         ref={navBarRef}
         className="flex items-center w-full gap-x-4 px-4 py-4 border-2 border-gray-200"
       >
-        <button onClick={() => setOpenSidebar(!openSidebar)}>
-          {openSidebar ? <Menu2LineIcon size={30} /> : <MenuLine size={30} />}
-        </button>
         <img className="ml-2" src={appIconWithText} alt="" />
         <div className="ml-4 space-x-4">
           <button>Your work</button>
@@ -106,30 +96,7 @@ const App = () => {
           )}
         </div>
       </div>
-      <div
-        className={`w-64 border-2 border-t-0 border-gray-200 h-full overflow-hidden ${
-          openSidebar ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="border-b-2 border-gray-200 px-4 py-3">
-          <div className="flex items-center gap-2">
-            <FlashlightFill className="flex-none" />{" "}
-            <span className="text-ellipsis overflow-hidden whitespace-nowrap">
-              Project name
-            </span>
-          </div>
-        </div>
-        <div className="px-4 py-3 space-y-4">
-          <NavLink to="/issues">
-            <FileCopyLine />
-            Issues
-          </NavLink>
-          <NavLink to="/settings">
-            <Settings4Line />
-            Project Settings
-          </NavLink>
-        </div>
-      </div>
+      <Outlet />
     </div>
   );
 };
