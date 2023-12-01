@@ -4,6 +4,7 @@ import { Board } from "../../../../types/Board";
 import Button from "../../../../components/Button";
 import More2FillIcon from "remixicon-react/More2FillIcon";
 import AddLineIcon from "remixicon-react/AddLineIcon";
+import BoardCard from "./BoardCard";
 
 const IssuesPage = () => {
   const { data } = useQuery<Board>(["issues", 1], async () => {
@@ -17,7 +18,7 @@ const IssuesPage = () => {
           <div className="rounded-lg bg-gray-100 w-80 p-3">
             <div className="flex items-center">
               <div className="px-2 text-sm text-[#44546f] font-semibold">
-                Project Resources
+                {column.name}
               </div>
               <div className="flex-1"></div>
               <Button $variant="ghost" $shape="square" className="self-start">
@@ -27,12 +28,7 @@ const IssuesPage = () => {
 
             <div key={column.id} className="space-y-2 mt-2">
               {column?.BoardColumnCards.map((boardCard) => (
-                <div
-                  key={boardCard.id}
-                  className="bg-white shadow rounded p-2 border-2 border-gray-200 hover:border-blue-600 transition-colors cursor-pointer"
-                >
-                  {boardCard.summary}
-                </div>
+                <BoardCard boardCard={boardCard} />
               ))}
             </div>
 
