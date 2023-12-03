@@ -1,21 +1,39 @@
+import ArrowLeftLine from "remixicon-react/ArrowLeftLineIcon";
+import ArrowRightLine from "remixicon-react/ArrowRightLineIcon";
 import FileCopyLine from "remixicon-react/FileCopyLineIcon";
 import FlashlightFill from "remixicon-react/FlashlightFillIcon";
 import Settings4Line from "remixicon-react/Settings4LineIcon";
-import ArrowLeftLine from "remixicon-react/ArrowLeftLineIcon";
-import ArrowRightLine from "remixicon-react/ArrowRightLineIcon";
 
-import NavLink from "./NavLink";
 import { useState } from "react";
+import { useQuery } from "react-query";
+import { useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 import axiosInstance from "../../../api/axios";
+import { boardSelector, setBoard } from "../../../slices/BoardSlice";
+import { RootState, useAppDispatch } from "../../../store";
 import { Board } from "../../../types/Board";
-import { useQuery } from "react-query";
+import NavLink from "./NavLink";
 
 const BoardPage = () => {
+  const { board } = useSelector<RootState, ReturnType<typeof boardSelector>>(
+    boardSelector
+  );
+  const dispatch = useAppDispatch();
+  const { data } = useQuery<Board>(
+    ["issues", 1],
+    async () => {
+      const data = (await axiosInstance.get("/board/1")).data;
+      dispatch(setBoard(data));
+      return data;
+    },
+    {
+      refetchOnMount: true,
+      refetchOnReconnect: true,
+      refetchOnWindowFocus: false,
+    }
+  );
+
   const [openSidebar, setOpenSidebar] = useState(true);
-  const { data } = useQuery<Board>(["issues", 1], async () => {
-    return (await axiosInstance.get("/board/1")).data;
-  });
 
   return (
     <div className="flex w-full h-full">

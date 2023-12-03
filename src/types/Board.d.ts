@@ -55,6 +55,7 @@ export interface BoardColumn {
 
 export interface BoardColumnCard {
   id: number;
+  cardIdx: number;
   Comments: Comment[];
   description: string;
   dueDate: null | string;

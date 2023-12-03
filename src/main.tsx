@@ -8,6 +8,8 @@ import App from "./routes/App/App.tsx";
 import { QueryClient, QueryClientProvider } from "react-query";
 import BoardPage from "./routes/App/Board/BoardPage.tsx";
 import IssuesPage from "./routes/App/Board/Issues/IssuesPage.tsx";
+import { Provider } from "react-redux";
+import { store } from "./store.ts";
 
 const router = createBrowserRouter([
   {
@@ -45,8 +47,10 @@ const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </Provider>
   </React.StrictMode>
 );
