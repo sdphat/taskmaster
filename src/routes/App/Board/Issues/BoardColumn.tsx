@@ -7,6 +7,8 @@ import { BoardColumn as BoardColumnType } from "../../../../types/Board";
 import { useState } from "react";
 import FormInput from "../../../../components/FormInput";
 import CloseLineIcon from "remixicon-react/CloseLineIcon";
+import TextArea from "../../../../components/TextArea";
+import FormInputError from "../../../../components/FormInputError";
 export interface CreateCardArgs {
   boardColumnId: number;
   summary: string;
@@ -19,13 +21,20 @@ export interface BoardColumnProps {
 const BoardColumn = ({ column, onCreateCard }: BoardColumnProps) => {
   const [isAddingCard, setAddingCard] = useState(false);
   const [summary, setSummary] = useState("");
+  const [error, setError] = useState("");
 
   const handleCancelAddCard = () => {
     setAddingCard(false);
     setSummary("");
+    setError("");
   };
 
   const handleSubmitAddCard = () => {
+    if (!summary) {
+      setError("Please enter card summary.");
+      return;
+    }
+    setError("");
     setAddingCard(false);
     setSummary("");
     onCreateCard({ boardColumnId: column.id, summary: summary });
@@ -33,12 +42,17 @@ const BoardColumn = ({ column, onCreateCard }: BoardColumnProps) => {
 
   const addCardForm = (
     <div className="mt-2">
-      <FormInput
-        type="text"
+      <TextArea
+        rows={5}
         placeholder="Summary"
-        onChange={(e) => setSummary(e.currentTarget.value)}
+        onChange={(e) => {
+          setSummary(e.currentTarget.value);
+          setError("");
+        }}
         value={summary}
+        $hasError={error !== ""}
       />
+      {error !== "" && <FormInputError>{error}</FormInputError>}
       <div className="flex mt-2 gap-2">
         <Button
           onClick={handleSubmitAddCard}
@@ -57,7 +71,7 @@ const BoardColumn = ({ column, onCreateCard }: BoardColumnProps) => {
   return (
     <div className="rounded-lg bg-gray-100 w-80 p-3 transition-all">
       <div className="flex items-center">
-        <div className="px-2 text-sm text-[#44546f] font-semibold">
+        <div className="break-all px-2 text-sm text-[#44546f] font-semibold">
           {column.name}
         </div>
         <div className="flex-1"></div>

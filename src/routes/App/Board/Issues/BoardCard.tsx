@@ -28,11 +28,11 @@ const BoardCard = ({ boardCard, indexInColumn }: BoardCardProps) => {
               ))}
             </div>
           )}
-          <div>{boardCard.summary}</div>
+          <div className="break-all">{boardCard.summary}</div>
         </div>
       )}
     </Draggable>
   );
-};
+}
 
 export default BoardCard;

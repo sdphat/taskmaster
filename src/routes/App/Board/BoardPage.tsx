@@ -46,7 +46,7 @@ const BoardPage = () => {
         <div className="border-b-2 border-gray-200 px-4 py-3">
           <div className="flex items-start gap-2">
             <FlashlightFill className="flex-none" />{" "}
-            <span className="text-ellipsis overflow-hidden whitespace-nowrap">
+            <span className="break-all">
               {data?.name}
             </span>
           </div>
