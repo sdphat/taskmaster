@@ -7,7 +7,7 @@ import Settings4Line from "remixicon-react/Settings4LineIcon";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import axiosInstance from "../../../api/axios";
 import { boardSelector, setBoard } from "../../../slices/BoardSlice";
 import { RootState, useAppDispatch } from "../../../store";
@@ -15,14 +15,15 @@ import { Board } from "../../../types/Board";
 import NavLink from "./NavLink";
 
 const BoardPage = () => {
+  const { id } = useParams();
   const { board } = useSelector<RootState, ReturnType<typeof boardSelector>>(
     boardSelector
   );
   const dispatch = useAppDispatch();
   const { data } = useQuery<Board>(
-    ["issues", 1],
+    ["issues", id],
     async () => {
-      const data = (await axiosInstance.get("/board/1")).data;
+      const data = (await axiosInstance.get("/board/" + id)).data;
       dispatch(setBoard(data));
       return data;
     },

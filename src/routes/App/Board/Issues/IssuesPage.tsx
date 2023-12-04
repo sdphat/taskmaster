@@ -2,9 +2,14 @@ import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd";
 import { useMutation } from "react-query";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../../../api/axios";
-import { boardSelector, moveCardTo } from "../../../../slices/BoardSlice";
+import {
+  boardSelector,
+  createCard,
+  moveCardTo,
+} from "../../../../slices/BoardSlice";
 import { RootState, useAppDispatch } from "../../../../store";
-import BoardColumn from "./BoardColumn";
+import { BoardColumnCard } from "../../../../types/Board";
+import BoardColumn, { BoardColumnProps } from "./BoardColumn";
 
 interface MoveCardArgs {
   fromColumn: number;
@@ -13,10 +18,20 @@ interface MoveCardArgs {
   toIdx: number;
 }
 
+export interface CreateCardArgs {
+  boardColumnId: number;
+  summary: string;
+}
+
+export interface CreateCardMutationReturn extends BoardColumnCard {
+  boardColumnId: number;
+}
+
 const IssuesPage = () => {
   const { board } = useSelector<RootState, ReturnType<typeof boardSelector>>(
     boardSelector
   );
+  const dispatch = useAppDispatch();
 
   const moveCardMutation = useMutation({
     mutationFn: async (args: MoveCardArgs) => {
@@ -24,7 +39,13 @@ const IssuesPage = () => {
     },
   });
 
-  const dispatch = useAppDispatch();
+  const createCardMutation = useMutation({
+    mutationFn: async (
+      args: CreateCardArgs
+    ): Promise<CreateCardMutationReturn> => {
+      return (await axiosInstance.post("/board-card", args)).data;
+    },
+  });
 
   const onCardDragEnd: OnDragEndResponder = ({ source, destination }) => {
     const args: MoveCardArgs = {
@@ -38,12 +59,21 @@ const IssuesPage = () => {
     moveCardMutation.mutateAsync(args);
   };
 
+  const handleCreateCard: BoardColumnProps["onCreateCard"] = async (args) => {
+    const card = await createCardMutation.mutateAsync(args);
+    dispatch(createCard(card));
+  };
+
   return (
     <DragDropContext onDragEnd={onCardDragEnd}>
       <div className="p-4">
         <div className="flex gap-4 items-start">
           {board?.BoardColumns.map((column) => (
-            <BoardColumn key={column.id} column={column} />
+            <BoardColumn
+              onCreateCard={handleCreateCard}
+              key={column.id}
+              column={column}
+            />
           ))}
         </div>
       </div>

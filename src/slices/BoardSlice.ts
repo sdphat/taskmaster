@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { Board } from "../types/Board";
+import { Board, BoardColumnCard } from "../types/Board";
 
 export interface BoardSliceState {
   board: Board | undefined;
@@ -11,6 +11,10 @@ export interface MoveCardToPayload {
   fromIdx: number;
   toColumn: number;
   toIdx: number;
+}
+
+export interface CreateCardPayload extends BoardColumnCard {
+  boardColumnId: number;
 }
 
 function sortBoardInPlace(board: Board) {
@@ -62,6 +66,15 @@ const boardSlice = createSlice({
       });
     },
 
+    createCard(
+      state,
+      { payload: { boardColumnId, ...card } }: PayloadAction<CreateCardPayload>
+    ) {
+      state
+        .board!.BoardColumns.find((b) => b.id === boardColumnId)!
+        .BoardColumnCards.push(card);
+    },
+
     setBoard(state, action: PayloadAction<Board>) {
       state.board = action.payload;
       sortBoardInPlace(state.board);
@@ -70,5 +83,5 @@ const boardSlice = createSlice({
 });
 
 export const boardReducer = boardSlice.reducer;
-export const { moveCardTo, setBoard } = boardSlice.actions;
+export const { createCard, moveCardTo, setBoard } = boardSlice.actions;
 export const boardSelector = (state: RootState) => state.board;
