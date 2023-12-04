@@ -1,14 +1,13 @@
+import { useState } from "react";
 import { Droppable } from "react-beautiful-dnd";
 import AddLineIcon from "remixicon-react/AddLineIcon";
+import CloseLineIcon from "remixicon-react/CloseLineIcon";
 import More2FillIcon from "remixicon-react/More2FillIcon";
 import Button from "../../../../components/Button";
-import BoardCard from "./BoardCard";
-import { BoardColumn as BoardColumnType } from "../../../../types/Board";
-import { useState } from "react";
-import FormInput from "../../../../components/FormInput";
-import CloseLineIcon from "remixicon-react/CloseLineIcon";
-import TextArea from "../../../../components/TextArea";
 import FormInputError from "../../../../components/FormInputError";
+import TextArea from "../../../../components/TextArea";
+import { BoardColumn as BoardColumnType } from "../../../../types/Board";
+import BoardCard from "./BoardCard";
 export interface CreateCardArgs {
   boardColumnId: number;
   summary: string;

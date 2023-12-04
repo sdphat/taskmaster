@@ -39,16 +39,16 @@ const BoardPage = () => {
   return (
     <div className="flex w-full h-full">
       <div
-        className={`relative flex-none w-64 border-2 border-t-0 border-gray-200 h-full transition-transform ${
-          openSidebar ? "translate-x-0" : "-translate-x-full"
+        className={`relative flex-none w-64 border-2 border-t-0 border-gray-200 h-full transition-transform transition-[width] ${
+          openSidebar
+            ? "translate-x-0"
+            : "-translate-x-[100%] border-r-0 w-0 overflow-hidden"
         }`}
       >
         <div className="border-b-2 border-gray-200 px-4 py-3">
           <div className="flex items-start gap-2">
             <FlashlightFill className="flex-none" />{" "}
-            <span className="break-all">
-              {data?.name}
-            </span>
+            <span className="break-all">{data?.name}</span>
           </div>
         </div>
         <div className="px-4 py-3 space-y-4">
@@ -61,13 +61,29 @@ const BoardPage = () => {
             Project Settings
           </NavLink>
         </div>
+      </div>
+      {/* Ledge to open drawer */}
+      <div
+        className={`relative group h-full w-4 top-0 -left-[1px] transition-all
+            ${
+              openSidebar
+                ? "bg-transparent border-0"
+                : "bg-white border-r-2 border-gray-200 hover:bg-gray-300 hover:border-gray-400 cursor-pointer"
+            }
+          `}
+        onClick={() => !openSidebar && setOpenSidebar(true)}
+      >
+        {/* Open/Close drawer button */}
         <button
-          className="absolute grid place-items-center 
-        bottom-[50%] translate-y-[50%] 
-        right-0 translate-x-[50%] 
-        rounded-full border-2 border-gray-200 
-        bg-white w-6 h-6 shadow-sm
-        hover:bg-gray-100"
+          className={`absolute grid place-items-center
+              bottom-[50%] translate-y-[50%]
+              rounded-full border-2 border-gray-200 bg-white 
+              w-6 h-6 shadow-sm
+              ${
+                openSidebar
+                  ? "hover:bg-gray-100 left-0 -translate-x-[50%]"
+                  : "group-hover:bg-gray-100 right-0 translate-x-[50%]"
+              }`}
           onClick={() => setOpenSidebar(!openSidebar)}
         >
           {openSidebar ? (
@@ -77,7 +93,9 @@ const BoardPage = () => {
           )}
         </button>
       </div>
-      <Outlet />
+      <div>
+        <Outlet />
+      </div>
     </div>
   );
 };
