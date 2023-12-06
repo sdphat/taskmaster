@@ -7,7 +7,7 @@ import Button from "../../../../components/Button";
 import FormInputError from "../../../../components/FormInputError";
 import TextArea from "../../../../components/TextArea";
 import { BoardColumn as BoardColumnType } from "../../../../types/Board";
-import BoardCard from "./BoardCard";
+import BoardCard, { BoardCardProps } from "./BoardCard";
 export interface CreateCardArgs {
   boardColumnId: number;
   summary: string;
@@ -15,9 +15,14 @@ export interface CreateCardArgs {
 export interface BoardColumnProps {
   column: BoardColumnType;
   onCreateCard: (card: CreateCardArgs) => void;
+  onClickCard: BoardCardProps["onClick"];
 }
 
-const BoardColumn = ({ column, onCreateCard }: BoardColumnProps) => {
+const BoardColumn = ({
+  column,
+  onCreateCard,
+  onClickCard,
+}: BoardColumnProps) => {
   const [isAddingCard, setAddingCard] = useState(false);
   const [summary, setSummary] = useState("");
   const [error, setError] = useState("");
@@ -88,6 +93,7 @@ const BoardColumn = ({ column, onCreateCard }: BoardColumnProps) => {
           >
             {column?.BoardColumnCards.map((boardCard, i) => (
               <BoardCard
+                onClick={onClickCard}
                 key={boardCard.id}
                 indexInColumn={i}
                 boardCard={boardCard}

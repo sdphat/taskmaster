@@ -3,9 +3,14 @@ import { BoardColumnCard } from "../../../../types/Board";
 export interface BoardCardProps {
   boardCard: BoardColumnCard;
   indexInColumn: number;
+  onClick?: (boardCard: BoardColumnCard, indexInColumn: number) => void;
 }
 
-const BoardCard = ({ boardCard, indexInColumn }: BoardCardProps) => {
+const BoardCard = ({
+  boardCard,
+  indexInColumn,
+  onClick = () => {},
+}: BoardCardProps) => {
   return (
     <Draggable draggableId={String(boardCard.id)} index={indexInColumn}>
       {(provided, snapshot) => (
@@ -13,6 +18,7 @@ const BoardCard = ({ boardCard, indexInColumn }: BoardCardProps) => {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          onClick={() => onClick(boardCard, indexInColumn)}
           className="bg-white shadow-sm rounded-xl p-2 border-2 border-gray-200 hover:border-blue-600 transition-colors cursor-pointer"
         >
           {boardCard.Labels.length > 0 && (
@@ -33,6 +39,6 @@ const BoardCard = ({ boardCard, indexInColumn }: BoardCardProps) => {
       )}
     </Draggable>
   );
-}
+};
 
 export default BoardCard;

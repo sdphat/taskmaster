@@ -1,43 +1,16 @@
-import { AxiosError, HttpStatusCode } from "axios";
 import { useRef, useState } from "react";
-import { useQuery } from "react-query";
-import { Outlet, useNavigate } from "react-router-dom";
-import axiosInstance from "../../api/axios";
+import { Outlet } from "react-router-dom";
 import appIconWithText from "../../assets/app-icon-with-text.svg";
-import googleIcon from "../../assets/google-icon.svg";
 import Button from "../../components/Button";
 import ROUTES from "../../constants/routes";
-import { BriefProfile } from "../../types/BriefProfile";
+import useProfile from "../../hooks/useProfile";
 import AccountDropdownItem from "./Board/AccountDropdownItem";
 import AccountDropdownSection from "./Board/AccountDropdownSection";
 
 const App = () => {
-  const navigate = useNavigate();
   const navBarRef = useRef<HTMLDivElement>(null);
   const [openAccountDropdown, setOpenAccountDropdown] = useState(false);
-  const { data: briefProfile } = useQuery<BriefProfile>(
-    "profile",
-    getBriefProfile,
-    {
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      refetchOnWindowFocus: false,
-    }
-  );
-
-  async function getBriefProfile() {
-    try {
-      return (await axiosInstance.get("/auth/profile")).data;
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        if (err.response?.status === HttpStatusCode.Unauthorized) {
-          navigate({ pathname: "/login" }, { replace: true });
-        }
-      }
-    }
-  }
-
-  console.log(briefProfile);
+  const { data: briefProfile } = useProfile();
 
   const navBarHeight = navBarRef.current?.clientHeight ?? 0;
 
@@ -60,7 +33,11 @@ const App = () => {
             className={`rounded-full w-11 h-11 outline-4 p-1 border-[5px] hover:border-gray-100 
             ${openAccountDropdown ? "border-gray-100" : "border-transparent"}`}
           >
-            <img src={googleIcon} alt="" className="object-cover" />
+            <img
+              src={briefProfile?.avatarUrl}
+              alt=""
+              className="object-cover"
+            />
           </button>
           {openAccountDropdown && (
             <div
@@ -72,7 +49,7 @@ const App = () => {
               <AccountDropdownSection>
                 <div className="flex">
                   <img
-                    src={googleIcon}
+                    src={briefProfile?.avatarUrl}
                     alt=""
                     className="w-10 h-10 px-2 flex-none"
                   />

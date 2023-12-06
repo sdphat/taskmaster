@@ -1,9 +1,15 @@
+import { HTMLAttributes } from "react";
 import tw from "tailwind-styled-components";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost";
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "ghost"
+  | "neutral"
+  | "danger";
 export type ButtonShape = "square" | "rect";
 
-export interface ButtonProps {
+export interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
   $variant?: ButtonVariant;
   $shape?: ButtonShape;
 }
@@ -12,6 +18,8 @@ const buttonVariantClassNames: Record<ButtonVariant, string> = {
   primary: "bg-blue-700 text-white active:bg-blue-800",
   ghost: "hover:bg-gray-200 active:bg-gray-400",
   secondary: "",
+  neutral: "bg-slate-200 hover:bg-slate-300 active:bg-slate-400",
+  danger: "bg-red-500 hover:bg-red-500 active:bg-red-600 text-red-800",
 };
 
 const buttonShapeClassNames: Record<ButtonShape, string> = {

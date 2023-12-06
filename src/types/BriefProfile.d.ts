@@ -1,4 +1,5 @@
-export interface BriefProfile {
-  fullName: string;
-  email: string;
+import { Member } from "./Board";
+
+export interface BriefProfile extends Omit<Member, "id"> {
+  
 }

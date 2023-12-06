@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd";
 import { useMutation } from "react-query";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../../../api/axios";
+import useProfile from "../../../../hooks/useProfile";
 import {
   boardSelector,
   createCard,
@@ -10,6 +12,7 @@ import {
 import { RootState, useAppDispatch } from "../../../../store";
 import { BoardColumnCard } from "../../../../types/Board";
 import BoardColumn, { BoardColumnProps } from "./BoardColumn";
+import CardDetailModal, { CardDetailModalProps } from "./CardDetailModal";
 
 interface MoveCardArgs {
   fromColumn: number;
@@ -28,6 +31,7 @@ export interface CreateCardMutationReturn extends BoardColumnCard {
 }
 
 const IssuesPage = () => {
+  const { data: briefProfile } = useProfile();
   const { board } = useSelector<RootState, ReturnType<typeof boardSelector>>(
     boardSelector
   );
@@ -47,6 +51,10 @@ const IssuesPage = () => {
     },
   });
 
+  const [cardDetail, setCardDetail] = useState<
+    CardDetailModalProps | undefined
+  >(undefined);
+
   const onCardDragEnd: OnDragEndResponder = ({ source, destination }) => {
     const args: MoveCardArgs = {
       fromColumn: +source.droppableId,
@@ -64,20 +72,35 @@ const IssuesPage = () => {
     dispatch(createCard(card));
   };
 
+  const handleClickCard: BoardColumnProps["onClickCard"] = async (card) => {
+    setCardDetail({
+      card,
+      columnCard: board!.BoardColumns.find((col) =>
+        col.BoardColumnCards.includes(card)
+      )!,
+      profile: briefProfile,
+      onClose: () => setCardDetail(undefined),
+    });
+  };
+
   return (
-    <DragDropContext onDragEnd={onCardDragEnd}>
-      <div className="p-4">
-        <div className="flex gap-4 items-start">
-          {board?.BoardColumns.map((column) => (
-            <BoardColumn
-              onCreateCard={handleCreateCard}
-              key={column.id}
-              column={column}
-            />
-          ))}
+    <div>
+      <DragDropContext onDragEnd={onCardDragEnd}>
+        <div className="p-4">
+          <div className="flex gap-4 items-start">
+            {board?.BoardColumns.map((column) => (
+              <BoardColumn
+                onClickCard={handleClickCard}
+                onCreateCard={handleCreateCard}
+                key={column.id}
+                column={column}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-    </DragDropContext>
+      </DragDropContext>
+      {cardDetail && <CardDetailModal {...cardDetail} />}
+    </div>
   );
 };
 
