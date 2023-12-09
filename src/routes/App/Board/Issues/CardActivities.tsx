@@ -7,6 +7,7 @@ import { BoardColumnCard } from "../../../../types/Board";
 import { BriefProfile } from "../../../../types/BriefProfile";
 import { Line } from "./CardDetailModal";
 import { useState } from "react";
+import Markdown from "react-markdown";
 
 export interface CardActivitiesProps {
   profile: BriefProfile;
@@ -92,7 +93,7 @@ const CardActivities = ({ profile, comments, onSave }: CardActivitiesProps) => {
                 <span className="text-xs ml-2">7 minutes ago</span>
               </div>
               <div className="border border-gray-300 rounded bg-white w-full p-2 shadow-md">
-                {comment.content}
+                <Markdown>{comment.content}</Markdown>
               </div>
             </div>
           </Line>
