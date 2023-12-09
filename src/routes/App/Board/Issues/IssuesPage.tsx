@@ -13,7 +13,6 @@ import { RootState, useAppDispatch } from "../../../../store";
 import { BoardColumnCard } from "../../../../types/Board";
 import BoardColumn, { BoardColumnProps } from "./BoardColumn";
 import CardDetailModal, { CardDetailModalProps } from "./CardDetailModal";
-
 interface MoveCardArgs {
   fromColumn: number;
   fromIdx: number;

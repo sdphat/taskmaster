@@ -1,4 +1,8 @@
-import { HTMLAttributes, ReactNode } from "react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import { EventInfo } from "@ckeditor/ckeditor5-utils";
+import "@mdxeditor/editor/style.css";
+import { HTMLAttributes, ReactNode, useState } from "react";
 import DescriptionIcon from "remixicon-react/AlignLeftIcon";
 import AttachmentIcon from "remixicon-react/Attachment2Icon";
 import ChecklistIcon from "remixicon-react/CheckboxLineIcon";
@@ -11,13 +15,11 @@ import ShareIcon from "remixicon-react/ShareLineIcon";
 import DatesIcon from "remixicon-react/TimeLineIcon";
 import MemberIcon from "remixicon-react/UserLineIcon";
 import HeaderIcon from "remixicon-react/Window2LineIcon";
+import tw from "tailwind-styled-components";
 import Button, { ButtonProps } from "../../../../components/Button";
-import FormInput from "../../../../components/FormInput";
 import ModalContainer from "../../../../components/ModalContainer";
 import { BoardColumn, BoardColumnCard } from "../../../../types/Board";
 import { BriefProfile } from "../../../../types/BriefProfile";
-import tw from "tailwind-styled-components";
-
 export interface CardDetailModalProps {
   card: BoardColumnCard;
   profile: BriefProfile;
@@ -29,7 +31,11 @@ interface ActionButtonProps extends ButtonProps {
   icon: ReactNode;
 }
 
-const ActionButton = ({ icon, children, ...props }: ActionButtonProps) => (
+export const ActionButton = ({
+  icon,
+  children,
+  ...props
+}: ActionButtonProps) => (
   <Button
     $variant="neutral"
     className="flex items-center h-8 rounded-sm"
@@ -47,25 +53,45 @@ interface LineProps extends HTMLAttributes<HTMLDivElement> {
 
 const LineDiv = tw.div`flex items-center`;
 
-const Line = ({ leftContent, children, ...props }: LineProps) => (
+export const Line = ({ leftContent, children, ...props }: LineProps) => (
   <LineDiv {...props}>
     <div className="w-8 flex-none mr-2">{leftContent}</div>
     {children}
   </LineDiv>
 );
 
-const CARD_PADDING = "px-4";
-const actionIconSize = 16;
+export const CARD_PADDING = "px-4";
+export const actionIconSize = 16;
 
-const CardDetailModal = ({
+export const CardDetailModal = ({
   card,
   columnCard,
   profile,
   onClose,
 }: CardDetailModalProps) => {
+  const [commentInput, setCommentInput] = useState("");
+  const [openCommentEditor, setOpenCommentEditor] = useState(false);
+
+  function handleCommentInputChange(
+    _event: EventInfo<string, unknown>,
+    editor: ClassicEditor
+  ): void {
+    setCommentInput(editor.getData());
+  }
+
+  function handleSaveComment(): void {
+    setCommentInput("");
+    setOpenCommentEditor(false);
+  }
+
+  function handleCancelComment(): void {
+    setCommentInput("");
+    setOpenCommentEditor(false);
+  }
+
   return (
     <ModalContainer onClose={onClose}>
-      <div className="bg-white rounded-lg max-w-4xl w-full pt-4 pb-8 h-max">
+      <div className="bg-white rounded-lg max-w-5xl w-full pt-4 pb-8 h-max">
         {/* Card header */}
         <div className="mb-6">
           <div className={`${CARD_PADDING}`}>
@@ -104,7 +130,40 @@ const CardDetailModal = ({
                       <img src={profile.avatarUrl} className="w-8 h-8" />
                     }
                   >
-                    <FormInput placeholder="Write a comment" />
+                    {openCommentEditor ? (
+                      <div>
+                        <div className="max-w-2xl">
+                          <CKEditor
+                            editor={ClassicEditor}
+                            onChange={handleCommentInputChange}
+                          />
+                        </div>
+                        <div className="mt-2">
+                          <div className="space-x-2">
+                            <Button
+                              onClick={handleSaveComment}
+                              $variant="primary"
+                            >
+                              Save
+                            </Button>
+                            <Button
+                              onClick={handleCancelComment}
+                              $variant="ghost"
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <Button
+                        $variant="neutral"
+                        className="font-semibold w-full h-16 inline-flex items-start"
+                        onClick={() => setOpenCommentEditor(true)}
+                      >
+                        Add a more detailed description...
+                      </Button>
+                    )}
                   </Line>
                 </div>
               </div>
