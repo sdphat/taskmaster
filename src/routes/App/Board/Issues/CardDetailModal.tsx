@@ -17,6 +17,7 @@ import { BriefProfile } from "../../../../types/BriefProfile";
 import CardDescription from "./CardDescription";
 import CardActivities from "./CardActivities";
 import FormInput from "../../../../components/FormInput";
+import CardLabels from "./CardLabels";
 export interface CardDetailModalProps {
   card: BoardColumnCard;
   profile: BriefProfile;
@@ -101,6 +102,7 @@ export const CardDetailModal = ({
         {/* Card body */}
         <div className={`flex ${CARD_PADDING}`}>
           <div className="flex-1 space-y-6 pr-4">
+            <CardLabels labels={card.Labels} />
             <CardDescription
               description={card.description}
               onSave={handleSaveDescription}
