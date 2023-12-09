@@ -1,4 +1,4 @@
-import { HTMLAttributes, ReactNode } from "react";
+import { HTMLAttributes, ReactNode, FocusEvent } from "react";
 import AttachmentIcon from "remixicon-react/Attachment2Icon";
 import ChecklistIcon from "remixicon-react/CheckboxLineIcon";
 import RemoveIcon from "remixicon-react/DeleteBinLineIcon";
@@ -16,6 +16,7 @@ import { BoardColumn, BoardColumnCard } from "../../../../types/Board";
 import { BriefProfile } from "../../../../types/BriefProfile";
 import CardDescription from "./CardDescription";
 import CardActivities from "./CardActivities";
+import FormInput from "../../../../components/FormInput";
 export interface CardDetailModalProps {
   card: BoardColumnCard;
   profile: BriefProfile;
@@ -73,6 +74,12 @@ export const CardDetailModal = ({
     console.log(newDescription);
   }
 
+  
+
+  function handleSaveTitle(event: FocusEvent<HTMLInputElement, Element>): void {
+    console.log(event.target.value);
+  }
+
   return (
     <ModalContainer onClose={onClose}>
       <div className="bg-white rounded-lg max-w-5xl w-full pt-4 pb-8 h-max">
@@ -81,9 +88,7 @@ export const CardDetailModal = ({
           <div className={`${CARD_PADDING}`}>
             <div>
               <Line leftContent={<HeaderIcon />}>
-                <h2 className="break-all text-2xl flex items-center">
-                  {card.summary}
-                </h2>
+                <FormInput defaultValue={card.summary} onBlur={handleSaveTitle} className="break-all text-2xl font-semibold flex items-center border-transparent -ml-2" />
               </Line>
               <Line className="text-sm">
                 in list&nbsp;{" "}
