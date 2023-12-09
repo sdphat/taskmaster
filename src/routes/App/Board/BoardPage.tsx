@@ -35,9 +35,9 @@ const BoardPage = () => {
   return (
     <div className="flex w-full h-full">
       <div
-        className={`relative flex-none w-64 border-2 border-t-0 border-gray-200 h-full transition-transform transition-[width] ${
+        className={`relative flex-none border-2 border-t-0 border-gray-200 h-full transition-all ${
           openSidebar
-            ? "translate-x-0"
+            ? "translate-x-0 w-64"
             : "-translate-x-[100%] border-r-0 w-0 overflow-hidden"
         }`}
       >
