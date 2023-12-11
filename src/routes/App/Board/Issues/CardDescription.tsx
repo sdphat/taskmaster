@@ -1,10 +1,12 @@
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import DescriptionIcon from "remixicon-react/AlignLeftIcon";
 import Button from "../../../../components/Button";
 import { EventInfo } from "@ckeditor/ckeditor5-utils";
 import { Line } from "./CardDetailModal";
 import { useState } from "react";
+import MarkdownComponent from "react-markdown";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import useCKEditor from "../../../../hooks/useCKEditor";
 
 export interface CardDescriptionProps {
   description: string;
@@ -14,6 +16,7 @@ export interface CardDescriptionProps {
 const CardDescription = ({ description, onSave }: CardDescriptionProps) => {
   const [editingDescription, setEditingDescription] = useState(description);
   const [openDescriptionEditor, setOpenDescriptionEditor] = useState(false);
+  const Editor = useCKEditor();
 
   function handleDescriptionChange(
     _event: EventInfo<string, unknown>,
@@ -54,7 +57,7 @@ const CardDescription = ({ description, onSave }: CardDescriptionProps) => {
             <div className="max-w-2xl">
               <CKEditor
                 data={description}
-                editor={ClassicEditor}
+                editor={Editor}
                 onChange={handleDescriptionChange}
               />
             </div>
@@ -70,7 +73,9 @@ const CardDescription = ({ description, onSave }: CardDescriptionProps) => {
             </div>
           </div>
         ) : description.length > 0 ? (
-          <div>{description}</div>
+          <div>
+            <MarkdownComponent>{description}</MarkdownComponent>
+          </div>
         ) : (
           <Button
             $variant="neutral"

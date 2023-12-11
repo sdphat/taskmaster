@@ -10,7 +10,7 @@ import {
   moveCardTo,
 } from "../../../../slices/BoardSlice";
 import { RootState, useAppDispatch } from "../../../../store";
-import { BoardColumnCard } from "../../../../types/Board";
+import { BoardColumnCard, Label } from "../../../../types/Board";
 import BoardColumn, { BoardColumnProps } from "./BoardColumn";
 import CardDetailModal, { CardDetailModalProps } from "./CardDetailModal";
 interface MoveCardArgs {
@@ -26,6 +26,18 @@ export interface CreateCardArgs {
 }
 
 export interface CreateCardMutationReturn extends BoardColumnCard {
+  boardColumnId: number;
+}
+
+export interface UpdateCardArgs {
+  cardId: number;
+  description?: string;
+  summary?: string;
+  dueDate?: Date;
+  labels?: Pick<Label, "color" | "name">[];
+}
+
+export interface UpdateCardMutationReturn extends BoardColumnCard {
   boardColumnId: number;
 }
 
@@ -50,8 +62,16 @@ const IssuesPage = () => {
     },
   });
 
+  const updateCardMutation = useMutation({
+    mutationFn: async (
+      args: UpdateCardArgs
+    ): Promise<UpdateCardMutationReturn> => {
+      return (await axiosInstance.put("/board-card", args)).data;
+    },
+  });
+
   const [cardDetail, setCardDetail] = useState<
-    CardDetailModalProps | undefined
+    Pick<CardDetailModalProps, "card" | "columnCard" | "profile"> | undefined
   >(undefined);
 
   const onCardDragEnd: OnDragEndResponder = ({ source, destination }) => {
@@ -78,9 +98,30 @@ const IssuesPage = () => {
         col.BoardColumnCards.includes(card)
       )!,
       profile: briefProfile,
-      onClose: () => setCardDetail(undefined),
     });
   };
+
+  function handleCloseCardDetailModal() {
+    setCardDetail(undefined);
+  }
+
+  async function handleSaveComment(comment: string) {
+    // updateCardMutation.mutateAsync({ cardId: cardDetail!.card.id,  });
+  }
+
+  async function handleSaveDescription(description: string): Promise<void> {
+    const card = await updateCardMutation.mutateAsync({
+      cardId: cardDetail!.card.id,
+      description,
+    });
+  }
+
+  function handleSaveTitle(title: string): void {
+    const card = updateCardMutation.mutateAsync({
+      cardId: cardDetail!.card.id,
+      summary: title,
+    });
+  }
 
   return (
     <div>
@@ -98,7 +139,15 @@ const IssuesPage = () => {
           </div>
         </div>
       </DragDropContext>
-      {cardDetail && <CardDetailModal {...cardDetail} />}
+      {cardDetail && (
+        <CardDetailModal
+          {...cardDetail}
+          onClose={handleCloseCardDetailModal}
+          onSaveComment={handleSaveComment}
+          onSaveDescription={handleSaveDescription}
+          onSaveTitle={handleSaveTitle}
+        />
+      )}
     </div>
   );
 };

@@ -8,6 +8,10 @@ import { BriefProfile } from "../../../../types/BriefProfile";
 import { Line } from "./CardDetailModal";
 import { useState } from "react";
 import Markdown from "react-markdown";
+import * as Editor from "../../../../ckeditor/ckeditor";
+import useCKEditor from "../../../../hooks/useCKEditor";
+
+Editor
 
 export interface CardActivitiesProps {
   profile: BriefProfile;
@@ -18,6 +22,7 @@ export interface CardActivitiesProps {
 const CardActivities = ({ profile, comments, onSave }: CardActivitiesProps) => {
   const [commentInput, setCommentInput] = useState("");
   const [openCommentEditor, setOpenCommentEditor] = useState(false);
+  const Editor = useCKEditor();
 
   function handleCommentInputChange(
     _event: EventInfo<string, unknown>,
@@ -51,7 +56,7 @@ const CardActivities = ({ profile, comments, onSave }: CardActivitiesProps) => {
               <div>
                 <div className="max-w-2xl">
                   <CKEditor
-                    editor={ClassicEditor}
+                    editor={Editor}
                     onChange={handleCommentInputChange}
                   />
                 </div>

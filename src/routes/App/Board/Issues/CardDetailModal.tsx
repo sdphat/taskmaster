@@ -22,6 +22,9 @@ export interface CardDetailModalProps {
   card: BoardColumnCard;
   profile: BriefProfile;
   columnCard: BoardColumn;
+  onSaveTitle: (title: string) => void;
+  onSaveComment: (comment: string) => void;
+  onSaveDescription: (description: string) => void;
   onClose: () => void;
 }
 
@@ -66,19 +69,20 @@ export const CardDetailModal = ({
   columnCard,
   profile,
   onClose,
+  onSaveTitle,
+  onSaveDescription,
+  onSaveComment,
 }: CardDetailModalProps) => {
   function handleSaveComment(comment: string): void {
-    console.log(comment);
+    onSaveComment(comment);
   }
 
   function handleSaveDescription(newDescription: string): void {
-    console.log(newDescription);
+    onSaveDescription(newDescription);
   }
 
-  
-
   function handleSaveTitle(event: FocusEvent<HTMLInputElement, Element>): void {
-    console.log(event.target.value);
+    onSaveTitle(event.target.value);
   }
 
   return (
@@ -89,7 +93,11 @@ export const CardDetailModal = ({
           <div className={`${CARD_PADDING}`}>
             <div>
               <Line leftContent={<HeaderIcon />}>
-                <FormInput defaultValue={card.summary} onBlur={handleSaveTitle} className="break-all text-2xl font-semibold flex items-center border-transparent -ml-2" />
+                <FormInput
+                  defaultValue={card.summary}
+                  onBlur={handleSaveTitle}
+                  className="break-all text-2xl font-semibold flex items-center border-transparent -ml-2"
+                />
               </Line>
               <Line className="text-sm">
                 in list&nbsp;{" "}

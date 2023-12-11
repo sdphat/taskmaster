@@ -12,6 +12,7 @@
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^40.1.0",
     "@ckeditor/ckeditor5-code-block": "^40.1.0",
+    "@ckeditor/ckeditor5-markdown-gfm": "^40.1.0",
     "@ckeditor/ckeditor5-react": "^6.2.0",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.3.2",
