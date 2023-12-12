@@ -26,6 +26,7 @@ export interface BoardColumnCard {
 
 export class Comment {
   id: number;
+  createdDate: string;
   content: string;
   Creator: Member;
   boardColumnCardId: number;

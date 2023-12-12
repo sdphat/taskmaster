@@ -8,10 +8,9 @@ import { BriefProfile } from "../../../../types/BriefProfile";
 import { Line } from "./CardDetailModal";
 import { useState } from "react";
 import Markdown from "react-markdown";
-import * as Editor from "../../../../ckeditor/ckeditor";
 import useCKEditor from "../../../../hooks/useCKEditor";
+import { formatDistance } from "date-fns";
 
-Editor
 
 export interface CardActivitiesProps {
   profile: BriefProfile;
@@ -95,7 +94,7 @@ const CardActivities = ({ profile, comments, onSave }: CardActivitiesProps) => {
             <div className="flex-1">
               <div>
                 <span className="font-bold">{comment.Creator.fullName}</span>
-                <span className="text-xs ml-2">7 minutes ago</span>
+                <span className="text-xs ml-2">{formatDistance(new Date(comment.createdDate), new Date(), { addSuffix: true })}</span>
               </div>
               <div className="border border-gray-300 rounded bg-white w-full p-2 shadow-md">
                 <Markdown>{comment.content}</Markdown>

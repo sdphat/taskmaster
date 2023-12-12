@@ -41,6 +41,12 @@ export interface UpdateCardMutationReturn extends BoardColumnCard {
   boardColumnId: number;
 }
 
+export interface CreateCommentArgs {
+  cardId: number;
+  createdDate: Date;
+  content: string;
+}
+
 const IssuesPage = () => {
   const { data: briefProfile } = useProfile();
   const { board } = useSelector<RootState, ReturnType<typeof boardSelector>>(
@@ -67,6 +73,12 @@ const IssuesPage = () => {
       args: UpdateCardArgs
     ): Promise<UpdateCardMutationReturn> => {
       return (await axiosInstance.put("/board-card", args)).data;
+    },
+  });
+
+  const createCommentMutation = useMutation({
+    mutationFn: async (args: CreateCommentArgs) => {
+      return (await axiosInstance.post("/comment", args)).data;
     },
   });
 
@@ -106,7 +118,11 @@ const IssuesPage = () => {
   }
 
   async function handleSaveComment(comment: string) {
-    // updateCardMutation.mutateAsync({ cardId: cardDetail!.card.id,  });
+    createCommentMutation.mutateAsync({
+      cardId: cardDetail!.card.id,
+      content: comment,
+      createdDate: new Date(),
+    });
   }
 
   async function handleSaveDescription(description: string): Promise<void> {
