@@ -17,6 +17,10 @@ export interface CreateCardPayload extends BoardColumnCard {
   boardColumnId: number;
 }
 
+export interface UpdateCardPayload extends BoardColumnCard {
+  boardColumnId: number;
+}
+
 function sortBoardInPlace(board: Board) {
   board.BoardColumns.forEach((column) =>
     column.BoardColumnCards.sort((a, b) => a.cardIdx - b.cardIdx)
@@ -75,6 +79,15 @@ const boardSlice = createSlice({
         .BoardColumnCards.push(card);
     },
 
+    updateCard(
+      state,
+      { payload: { boardColumnId, ...card } }: PayloadAction<UpdateCardPayload>
+    ) {
+      state
+        .board!.BoardColumns.find((b) => b.id === boardColumnId)!
+        .BoardColumnCards.splice(card.cardIdx, 1, card);
+    },
+
     setBoard(state, action: PayloadAction<Board>) {
       state.board = action.payload;
       sortBoardInPlace(state.board);
@@ -83,5 +96,5 @@ const boardSlice = createSlice({
 });
 
 export const boardReducer = boardSlice.reducer;
-export const { createCard, moveCardTo, setBoard } = boardSlice.actions;
+export const { createCard, moveCardTo, setBoard, updateCard } = boardSlice.actions;
 export const boardSelector = (state: RootState) => state.board;

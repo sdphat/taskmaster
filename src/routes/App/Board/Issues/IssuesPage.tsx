@@ -8,9 +8,15 @@ import {
   boardSelector,
   createCard,
   moveCardTo,
+  updateCard,
 } from "../../../../slices/BoardSlice";
 import { RootState, useAppDispatch } from "../../../../store";
-import { BoardColumnCard, Label } from "../../../../types/Board";
+import {
+  BoardColumn as BoardColumnType,
+  BoardColumnCard,
+  Comment,
+  Label,
+} from "../../../../types/Board";
 import BoardColumn, { BoardColumnProps } from "./BoardColumn";
 import CardDetailModal, { CardDetailModalProps } from "./CardDetailModal";
 interface MoveCardArgs {
@@ -40,6 +46,8 @@ export interface UpdateCardArgs {
 export interface UpdateCardMutationReturn extends BoardColumnCard {
   boardColumnId: number;
 }
+
+export interface CreateCommentMutationReturn extends Comment {}
 
 export interface CreateCommentArgs {
   cardId: number;
@@ -77,14 +85,33 @@ const IssuesPage = () => {
   });
 
   const createCommentMutation = useMutation({
-    mutationFn: async (args: CreateCommentArgs) => {
+    mutationFn: async (
+      args: CreateCommentArgs
+    ): Promise<CreateCommentMutationReturn> => {
       return (await axiosInstance.post("/comment", args)).data;
     },
   });
 
-  const [cardDetail, setCardDetail] = useState<
-    Pick<CardDetailModalProps, "card" | "columnCard" | "profile"> | undefined
-  >(undefined);
+  const [cardDetailPosition, setCardDetailPosition] = useState<{
+    cardIdx: number;
+    colId: number;
+  }>();
+
+  const selectedColumn: BoardColumnType | undefined = board?.BoardColumns.find(
+    (col) => col.id === cardDetailPosition?.colId
+  );
+
+  const cardDetail:
+    | Pick<CardDetailModalProps, "card" | "columnCard" | "profile">
+    | undefined = selectedColumn
+    ? {
+        columnCard: selectedColumn,
+        card:
+          selectedColumn.BoardColumnCards[cardDetailPosition?.cardIdx ?? -1] ??
+          undefined,
+        profile: briefProfile,
+      }
+    : undefined;
 
   const onCardDragEnd: OnDragEndResponder = ({ source, destination }) => {
     const args: MoveCardArgs = {
@@ -104,25 +131,36 @@ const IssuesPage = () => {
   };
 
   const handleClickCard: BoardColumnProps["onClickCard"] = async (card) => {
-    setCardDetail({
-      card,
-      columnCard: board!.BoardColumns.find((col) =>
-        col.BoardColumnCards.includes(card)
-      )!,
-      profile: briefProfile,
+    board!.BoardColumns.forEach((col) => {
+      col.BoardColumnCards.forEach((c, cardIdx) => {
+        if (c.id === card.id) {
+          setCardDetailPosition({ cardIdx, colId: col.id });
+          return;
+        }
+      });
     });
   };
 
   function handleCloseCardDetailModal() {
-    setCardDetail(undefined);
+    setCardDetailPosition(undefined);
   }
 
   async function handleSaveComment(comment: string) {
-    createCommentMutation.mutateAsync({
+    const returnComment = await createCommentMutation.mutateAsync({
       cardId: cardDetail!.card.id,
       content: comment,
       createdDate: new Date(),
     });
+
+    dispatch(
+      updateCard({
+        ...cardDetail!.card,
+        Comments: [...cardDetail!.card.Comments]
+          .concat(returnComment)
+          .sort((a, b) => b.id - a.id),
+        boardColumnId: cardDetail!.columnCard.id,
+      })
+    );
   }
 
   async function handleSaveDescription(description: string): Promise<void> {
@@ -130,13 +168,17 @@ const IssuesPage = () => {
       cardId: cardDetail!.card.id,
       description,
     });
+
+    dispatch(updateCard(card));
   }
 
-  function handleSaveTitle(title: string): void {
-    const card = updateCardMutation.mutateAsync({
+  async function handleSaveTitle(title: string): Promise<void> {
+    const card = await updateCardMutation.mutateAsync({
       cardId: cardDetail!.card.id,
       summary: title,
     });
+
+    dispatch(updateCard(card));
   }
 
   return (
