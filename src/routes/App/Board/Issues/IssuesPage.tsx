@@ -200,6 +200,7 @@ const IssuesPage = () => {
       {cardDetail && (
         <CardDetailModal
           {...cardDetail}
+          allLabels={board!.BoardLabels}
           onClose={handleCloseCardDetailModal}
           onSaveComment={handleSaveComment}
           onSaveDescription={handleSaveDescription}

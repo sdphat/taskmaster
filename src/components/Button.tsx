@@ -19,7 +19,7 @@ const buttonVariantClassNames: Record<ButtonVariant, string> = {
   ghost: "hover:bg-gray-200 active:bg-gray-400",
   secondary: "",
   neutral: "bg-slate-200 hover:bg-slate-300 active:bg-slate-400",
-  danger: "bg-red-500 hover:bg-red-500 active:bg-red-600 text-red-800",
+  danger: "bg-red-600 hover:bg-red-700 active:bg-red-800 text-white",
 };
 
 const buttonShapeClassNames: Record<ButtonShape, string> = {

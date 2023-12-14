@@ -1,4 +1,10 @@
-import { HTMLAttributes, ReactNode, FocusEvent } from "react";
+import {
+  FocusEvent,
+  HTMLAttributes,
+  MouseEvent,
+  ReactNode,
+  useRef
+} from "react";
 import AttachmentIcon from "remixicon-react/Attachment2Icon";
 import ChecklistIcon from "remixicon-react/CheckboxLineIcon";
 import RemoveIcon from "remixicon-react/DeleteBinLineIcon";
@@ -11,17 +17,20 @@ import MemberIcon from "remixicon-react/UserLineIcon";
 import HeaderIcon from "remixicon-react/Window2LineIcon";
 import tw from "tailwind-styled-components";
 import Button, { ButtonProps } from "../../../../components/Button";
-import ModalContainer from "../../../../components/ModalContainer";
-import { BoardColumn, BoardColumnCard } from "../../../../types/Board";
-import { BriefProfile } from "../../../../types/BriefProfile";
-import CardDescription from "./CardDescription";
-import CardActivities from "./CardActivities";
 import FormInput from "../../../../components/FormInput";
+import ModalContainer from "../../../../components/ModalContainer";
+import useRefresh from "../../../../hooks/useRefresh";
+import { BoardColumn, BoardColumnCard, Label } from "../../../../types/Board";
+import { BriefProfile } from "../../../../types/BriefProfile";
+import CardActivities from "./CardActivities";
+import CardDescription from "./CardDescription";
 import CardLabels from "./CardLabels";
+import LabelsModal from "./LabelsDropdown";
 export interface CardDetailModalProps {
   card: BoardColumnCard;
   profile: BriefProfile;
   columnCard: BoardColumn;
+  allLabels: Label[];
   onSaveTitle: (title: string) => void;
   onSaveComment: (comment: string) => void;
   onSaveDescription: (description: string) => void;
@@ -67,12 +76,16 @@ export const actionIconSize = 16;
 export const CardDetailModal = ({
   card,
   columnCard,
+  allLabels,
   profile,
   onClose,
   onSaveTitle,
   onSaveDescription,
   onSaveComment,
 }: CardDetailModalProps) => {
+  const refresh = useRefresh();
+  const labelDropdownAnchorRef = useRef<HTMLElement>();
+
   function handleSaveComment(comment: string): void {
     onSaveComment(comment);
   }
@@ -83,6 +96,30 @@ export const CardDetailModal = ({
 
   function handleSaveTitle(event: FocusEvent<HTMLInputElement, Element>): void {
     onSaveTitle(event.target.value);
+  }
+
+  function handleAddLabel(label: Label): void {
+    console.log("add label");
+  }
+
+  function handleRemoveLabel(label: Label): void {
+    console.log("remove label");
+  }
+
+  function handleCreateLabel(label: Pick<Label, "name" | "color">): void {}
+
+  function handleSaveEditLabel(label: Label): void {}
+
+  function handleLabelBtnCLick(event: MouseEvent<HTMLButtonElement>): void {
+    labelDropdownAnchorRef.current !== event.currentTarget
+      ? (labelDropdownAnchorRef.current = event.currentTarget)
+      : (labelDropdownAnchorRef.current = undefined);
+    refresh();
+  }
+
+  function handleCloseLabelModal(): void {
+    labelDropdownAnchorRef.current = undefined;
+    refresh();
   }
 
   return (
@@ -134,7 +171,10 @@ export const CardDetailModal = ({
                 <ActionButton icon={<MemberIcon size={actionIconSize} />}>
                   Members
                 </ActionButton>
-                <ActionButton icon={<LabelIcon size={actionIconSize} />}>
+                <ActionButton
+                  onClick={handleLabelBtnCLick}
+                  icon={<LabelIcon size={actionIconSize} />}
+                >
                   Labels
                 </ActionButton>
                 <ActionButton icon={<ChecklistIcon size={actionIconSize} />}>
@@ -164,6 +204,18 @@ export const CardDetailModal = ({
                   Remove
                 </ActionButton>
               </div>
+              {labelDropdownAnchorRef?.current !== undefined && (
+                <LabelsModal
+                  onCloseModal={handleCloseLabelModal}
+                  onCreateLabel={handleCreateLabel}
+                  onSaveEditLabel={handleSaveEditLabel}
+                  anchor={labelDropdownAnchorRef.current as HTMLElement}
+                  allLabels={allLabels}
+                  onAddLabel={handleAddLabel}
+                  onRemoveLabel={handleRemoveLabel}
+                  selectedLabels={card.Labels}
+                />
+              )}
             </div>
           </div>
         </div>

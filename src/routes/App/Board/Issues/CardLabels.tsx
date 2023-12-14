@@ -1,6 +1,6 @@
 import { BoardColumnCard } from "../../../../types/Board";
+import { getTextColor } from "../../../../utils/labelUtils";
 import { Line } from "./CardDetailModal";
-import tinyColor from "tinycolor2";
 
 export interface CardLabelsProps {
   labels: BoardColumnCard["Labels"];
@@ -17,7 +17,7 @@ const CardLabels = ({ labels }: CardLabelsProps) => {
             <span
               style={{
                 backgroundColor: label.color,
-                color: tinyColor.mostReadable(label.color, ['#fff', '#000']).toHexString(),
+                color: getTextColor(label.color)?.textColor,
               }}
               className="min-w-[2rem] py-2 px-4 rounded-md text-center font-semibold"
               key={label.id}
