@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { Board, BoardColumnCard } from "../types/Board";
+import { Board, BoardColumnCard, Label } from "../types/Board";
 
 export interface BoardSliceState {
   board: Board | undefined;
@@ -19,6 +19,11 @@ export interface CreateCardPayload extends BoardColumnCard {
 
 export interface UpdateCardPayload extends BoardColumnCard {
   boardColumnId: number;
+}
+
+export interface UpdateLabelListPayload {
+  cardId: number;
+  labelIds: number[];
 }
 
 function sortBoardInPlace(board: Board) {
@@ -92,9 +97,58 @@ const boardSlice = createSlice({
       state.board = action.payload;
       sortBoardInPlace(state.board);
     },
+
+    createLabel(state, action: PayloadAction<Label>) {
+      state.board!.BoardLabels.push(action.payload);
+    },
+
+    updateLabel(state, { payload }: PayloadAction<Label>) {
+      // Update board label
+      const label = state.board!.BoardLabels.find(
+        (label) => label.id === payload.id
+      );
+      if (!label) {
+        return;
+      }
+      label.name = payload.name;
+      label.color = payload.color;
+
+      // Update each card with matched label
+      const labelsWithPayloadId = state
+        .board!.BoardColumns.flatMap(({ BoardColumnCards }) => BoardColumnCards)
+        .flatMap((card) => card.Labels)
+        .filter((label) => label.id === payload.id);
+
+      labelsWithPayloadId.forEach((label) => {
+        label.color = payload.color;
+        label.name = payload.name;
+      });
+    },
+
+    updateLabelList(state, { payload }: PayloadAction<UpdateLabelListPayload>) {
+      const card = state
+        .board!.BoardColumns.flatMap((col) => col.BoardColumnCards)
+        .find((card) => card.id === payload.cardId);
+      if (!card) {
+        return;
+      }
+
+      const allLabels = state.board!.BoardLabels;
+      card.Labels = allLabels.filter((label) =>
+        payload.labelIds.includes(label.id)
+      );
+    },
   },
 });
 
 export const boardReducer = boardSlice.reducer;
-export const { createCard, moveCardTo, setBoard, updateCard } = boardSlice.actions;
+export const {
+  updateLabel,
+  updateLabelList,
+  createCard,
+  moveCardTo,
+  setBoard,
+  updateCard,
+  createLabel,
+} = boardSlice.actions;
 export const boardSelector = (state: RootState) => state.board;

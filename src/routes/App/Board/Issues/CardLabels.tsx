@@ -6,7 +6,6 @@ export interface CardLabelsProps {
   labels: BoardColumnCard["Labels"];
 }
 
-// Todo: Open card label dialog to add label
 const CardLabels = ({ labels }: CardLabelsProps) => {
   return (
     <Line>

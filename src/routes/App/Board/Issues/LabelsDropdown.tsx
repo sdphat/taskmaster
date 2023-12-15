@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import BackIcon from "remixicon-react/ArrowLeftLineIcon";
 import CloseIcon from "remixicon-react/CloseLineIcon";
 import EditIcon from "remixicon-react/EditLineIcon";
@@ -13,10 +13,10 @@ import { bgTextColorPair, getTextColor } from "../../../../utils/labelUtils";
 export interface LabelsModalProps {
   selectedLabels: Label[];
   allLabels: Label[];
-  onAddLabel: (label: Label) => void;
-  onRemoveLabel: (label: Label) => void;
-  onCreateLabel: (label: Pick<Label, "name" | "color">) => void;
-  onSaveEditLabel: (label: Label) => void;
+  onAddLabel: (label: Label) => Promise<void> | void;
+  onRemoveLabel: (label: Label) => Promise<void> | void;
+  onCreateLabel: (label: Pick<Label, "name" | "color">) => Promise<void> | void;
+  onSaveEditLabel: (label: Label) => Promise<void> | void;
   onCloseModal: () => void;
   anchor: HTMLElement;
 }
@@ -60,7 +60,10 @@ const LabelListPanel = ({
               className="w-4 h-4"
             />
             <span
-              style={{ background: label.color }}
+              style={{
+                background: label.color,
+                color: getTextColor(label.color)?.textColor,
+              }}
               className="inline-flex flex-1 min-w-0 font-semibold items-center h-8 py-0 px-4 text-left rounded cursor-pointer select-none overflow-hidden whitespace-nowrap text-ellipsis"
             >
               <span className="overflow-hidden whitespace-nowrap text-ellipsis">
@@ -134,9 +137,7 @@ const LabelDetailPanel = (props: LabelDetailPanelProps) => {
         <FormField>
           <FormLabel className="text-xs font-semibold mb-1">Title</FormLabel>
           <FormInput
-            onChange={(e) =>
-              setLabel({ color: label.color, name: e.target.value })
-            }
+            onChange={(e) => setLabel({ ...label, name: e.target.value })}
             value={label.name}
           />
         </FormField>
@@ -151,9 +152,7 @@ const LabelDetailPanel = (props: LabelDetailPanelProps) => {
                   ? "ring-2 ring-offset-1 ring-blue-700"
                   : ""
               }`}
-              onClick={() =>
-                setLabel({ name: label.name, color: pair.background })
-              }
+              onClick={() => setLabel({ ...label, color: pair.background })}
             />
           ))}
         </div>
@@ -183,7 +182,7 @@ const LabelDetailPanel = (props: LabelDetailPanelProps) => {
 
 interface LabelStackData {
   title?: string;
-  element: JSX.Element;
+  element: () => JSX.Element;
 }
 
 const LabelsModal = ({
@@ -198,10 +197,10 @@ const LabelsModal = ({
 }: LabelsModalProps) => {
   const refresh = useRefresh();
 
-  const panelStackRef = useRef<LabelStackData[]>([
+  const [panelStack, setPanelStack] = useState<LabelStackData[]>([
     {
       title: "Labels",
-      element: (
+      element: () => (
         <LabelListPanel
           onClickEditLabel={handleClickEditBtn}
           allLabels={allLabels}
@@ -214,8 +213,8 @@ const LabelsModal = ({
               element: (
                 <LabelDetailPanel
                   mode="create"
-                  onCreateLabel={(label) => {
-                    onCreateLabel(label);
+                  onCreateLabel={async (label) => {
+                    await onCreateLabel(label);
                     goBack();
                   }}
                 />
@@ -226,17 +225,20 @@ const LabelsModal = ({
       ),
     },
   ]);
-  const currentPanel = panelStackRef.current[panelStackRef.current.length - 1];
+  const currentPanel = panelStack[panelStack.length - 1];
 
   function goBack() {
-    if (panelStackRef.current.length > 1) {
-      panelStackRef.current.pop();
+    setPanelStack((panelStack) => {
+      if(panelStack.length > 1) {
+        return panelStack.slice(0, -1)
+      }
+      return panelStack;
+    });
       refresh();
     }
-  }
 
   function pushPanel(data: { title?: string; element: JSX.Element }) {
-    panelStackRef.current.push(data);
+    setPanelStack((panelStack) => panelStack.concat({ ...data, element: () => data.element }))
     refresh();
   }
 
@@ -247,12 +249,12 @@ const LabelsModal = ({
         <LabelDetailPanel
           label={label as Label}
           mode="edit"
-          onRemoveLabel={(label) => {
-            onRemoveLabel(label);
+          onRemoveLabel={async (label) => {
+            await onRemoveLabel(label);
             goBack();
           }}
-          onSaveLabel={(label) => {
-            onSaveEditLabel(label);
+          onSaveLabel={async (label) => {
+            await onSaveEditLabel(label);
             goBack();
           }}
         />
@@ -273,7 +275,7 @@ const LabelsModal = ({
       >
         <CloseIcon size={18} />
       </Button>
-      {panelStackRef.current.length > 1 && (
+      {panelStack.length > 1 && (
         <Button
           $variant="ghost"
           $shape="square"
@@ -285,7 +287,7 @@ const LabelsModal = ({
       )}
       <h4 className="mt-4 px-12 text-center">{currentPanel.title}</h4>
       <div className="mt-4 pb-4 flex-1 overflow-y-auto">
-        {currentPanel.element}
+        <currentPanel.element />
       </div>
     </div>
   );

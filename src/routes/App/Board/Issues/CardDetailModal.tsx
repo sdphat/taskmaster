@@ -3,7 +3,7 @@ import {
   HTMLAttributes,
   MouseEvent,
   ReactNode,
-  useRef
+  useRef,
 } from "react";
 import AttachmentIcon from "remixicon-react/Attachment2Icon";
 import ChecklistIcon from "remixicon-react/CheckboxLineIcon";
@@ -26,7 +26,16 @@ import CardActivities from "./CardActivities";
 import CardDescription from "./CardDescription";
 import CardLabels from "./CardLabels";
 import LabelsModal from "./LabelsDropdown";
+import axiosInstance from "../../../../api/axios";
+import { useMutation } from "react-query";
+import { useAppDispatch } from "../../../../store";
+import {
+  createLabel,
+  updateLabel,
+  updateLabelList,
+} from "../../../../slices/BoardSlice";
 export interface CardDetailModalProps {
+  boardId: number;
   card: BoardColumnCard;
   profile: BriefProfile;
   columnCard: BoardColumn;
@@ -70,10 +79,27 @@ export const Line = ({ leftContent, children, ...props }: LineProps) => (
   </LineDiv>
 );
 
-export const CARD_PADDING = "px-4";
-export const actionIconSize = 16;
+const CARD_PADDING = "px-4";
+const actionIconSize = 16;
+
+interface CreateLabelArgs {
+  boardId: number;
+  name: string;
+  color: string;
+}
+interface UpdateLabelArgs {
+  id: number;
+  name: string;
+  color: string;
+}
+
+interface UpdateLabelListArgs {
+  cardId: number;
+  labelIds: number[];
+}
 
 export const CardDetailModal = ({
+  boardId,
   card,
   columnCard,
   allLabels,
@@ -85,6 +111,27 @@ export const CardDetailModal = ({
 }: CardDetailModalProps) => {
   const refresh = useRefresh();
   const labelDropdownAnchorRef = useRef<HTMLElement>();
+  const dispatch = useAppDispatch();
+
+  const createLabelMutation = useMutation({
+    async mutationFn(args: CreateLabelArgs): Promise<Label> {
+      return (await axiosInstance.post("/card-label", args)).data;
+    },
+  });
+
+  const updateLabelMutation = useMutation({
+    async mutationFn({ id, ...updateData }: UpdateLabelArgs) {
+      return (await axiosInstance.put(`/card-label/${id}`, updateData)).data;
+    },
+  });
+
+  const addLabelMutation = useMutation({
+    async mutationFn({ cardId, labelIds }: UpdateLabelListArgs) {
+      return (
+        await axiosInstance.put(`/board-card`, { cardId, labels: labelIds })
+      ).data;
+    },
+  });
 
   function handleSaveComment(comment: string): void {
     onSaveComment(comment);
@@ -98,17 +145,42 @@ export const CardDetailModal = ({
     onSaveTitle(event.target.value);
   }
 
-  function handleAddLabel(label: Label): void {
-    console.log("add label");
+  async function handleAddLabel(label: Label): Promise<void> {
+    const payload = {
+      cardId: card.id,
+      labelIds: card.Labels.map((lbl) => lbl.id).concat(label.id),
+    };
+    await addLabelMutation.mutateAsync(payload);
+
+    dispatch(updateLabelList(payload));
   }
 
-  function handleRemoveLabel(label: Label): void {
-    console.log("remove label");
+  async function handleRemoveLabel(label: Label): Promise<void> {
+    const payload = {
+      cardId: card.id,
+      labelIds: card.Labels.filter((lbl) => lbl.id !== label.id).map(
+        (lbl) => lbl.id
+      ),
+    };
+
+    await addLabelMutation.mutateAsync(payload);
+    dispatch(updateLabelList(payload));
   }
 
-  function handleCreateLabel(label: Pick<Label, "name" | "color">): void {}
+  async function handleCreateLabel(
+    label: Pick<Label, "name" | "color">
+  ): Promise<void> {
+    const newLabel = await createLabelMutation.mutateAsync({
+      boardId,
+      ...label,
+    });
+    dispatch(createLabel(newLabel));
+  }
 
-  function handleSaveEditLabel(label: Label): void {}
+  async function handleSaveEditLabel(label: Label): Promise<void> {
+    await updateLabelMutation.mutateAsync(label);
+    dispatch(updateLabel(label));
+  }
 
   function handleLabelBtnCLick(event: MouseEvent<HTMLButtonElement>): void {
     labelDropdownAnchorRef.current !== event.currentTarget
