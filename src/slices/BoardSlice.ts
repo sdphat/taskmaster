@@ -125,6 +125,26 @@ const boardSlice = createSlice({
       });
     },
 
+    removeLabel(state, { payload }: PayloadAction<Label>) {
+      // Remove label in board
+      state.board!.BoardLabels = state.board!.BoardLabels.filter(
+        (label) => label.id !== payload.id
+      );
+
+      // Remove label in each card
+      state.board!.BoardColumns = state.board!.BoardColumns.map((col) => ({
+        ...col,
+        BoardColumnCards: {
+          ...col.BoardColumnCards.map((card) => ({
+            ...card,
+            Labels: card.Labels.filter((label) => label.id !== payload.id),
+          })),
+        },
+      }));
+
+      return state;
+    },
+
     updateLabelList(state, { payload }: PayloadAction<UpdateLabelListPayload>) {
       const card = state
         .board!.BoardColumns.flatMap((col) => col.BoardColumnCards)
@@ -150,5 +170,6 @@ export const {
   setBoard,
   updateCard,
   createLabel,
+  removeLabel,
 } = boardSlice.actions;
 export const boardSelector = (state: RootState) => state.board;

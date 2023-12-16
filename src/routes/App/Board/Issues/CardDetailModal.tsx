@@ -31,6 +31,7 @@ import { useMutation } from "react-query";
 import { useAppDispatch } from "../../../../store";
 import {
   createLabel,
+  removeLabel,
   updateLabel,
   updateLabelList,
 } from "../../../../slices/BoardSlice";
@@ -98,6 +99,10 @@ interface UpdateLabelListArgs {
   labelIds: number[];
 }
 
+interface RemoveLabelMutationArgs {
+  labelId: number;
+}
+
 export const CardDetailModal = ({
   boardId,
   card,
@@ -133,6 +138,12 @@ export const CardDetailModal = ({
     },
   });
 
+  const removeLabelMutation = useMutation({
+    async mutationFn({ labelId }: RemoveLabelMutationArgs) {
+      return (await axiosInstance.delete(`/card-label/${labelId}`)).data;
+    },
+  });
+
   function handleSaveComment(comment: string): void {
     onSaveComment(comment);
   }
@@ -156,15 +167,8 @@ export const CardDetailModal = ({
   }
 
   async function handleRemoveLabel(label: Label): Promise<void> {
-    const payload = {
-      cardId: card.id,
-      labelIds: card.Labels.filter((lbl) => lbl.id !== label.id).map(
-        (lbl) => lbl.id
-      ),
-    };
-
-    await addLabelMutation.mutateAsync(payload);
-    dispatch(updateLabelList(payload));
+    await removeLabelMutation.mutateAsync({ labelId: label.id });
+    dispatch(removeLabel(label));
   }
 
   async function handleCreateLabel(

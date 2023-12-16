@@ -182,8 +182,11 @@ const LabelDetailPanel = (props: LabelDetailPanelProps) => {
 
 interface LabelStackData {
   title?: string;
-  element: () => JSX.Element;
+  panelType: PanelType;
+
 }
+
+type PanelType = "create" | "edit" | "list";
 
 const LabelsModal = ({
   allLabels,
@@ -200,66 +203,33 @@ const LabelsModal = ({
   const [panelStack, setPanelStack] = useState<LabelStackData[]>([
     {
       title: "Labels",
-      element: () => (
-        <LabelListPanel
-          onClickEditLabel={handleClickEditBtn}
-          allLabels={allLabels}
-          selectedLabels={selectedLabels}
-          onAddLabel={onAddLabel}
-          onRemoveLabel={onRemoveLabel}
-          onClickCreateNewLabel={() =>
-            pushPanel({
-              title: "Create label",
-              element: (
-                <LabelDetailPanel
-                  mode="create"
-                  onCreateLabel={async (label) => {
-                    await onCreateLabel(label);
-                    goBack();
-                  }}
-                />
-              ),
-            })
-          }
-        />
-      ),
+      panelType: "list",
     },
   ]);
   const currentPanel = panelStack[panelStack.length - 1];
+  const [editingLabel, setEditingLabel] = useState<Label | undefined>(undefined);
 
   function goBack() {
     setPanelStack((panelStack) => {
-      if(panelStack.length > 1) {
-        return panelStack.slice(0, -1)
+      if (panelStack.length > 1) {
+        return panelStack.slice(0, -1);
       }
       return panelStack;
     });
-      refresh();
-    }
+    refresh();
+  }
 
-  function pushPanel(data: { title?: string; element: JSX.Element }) {
-    setPanelStack((panelStack) => panelStack.concat({ ...data, element: () => data.element }))
+  function pushPanel(data: { title?: string; panelType: PanelType }) {
+    setPanelStack((panelStack) => panelStack.concat(data));
     refresh();
   }
 
   function handleClickEditBtn(label: Label) {
     pushPanel({
       title: "Edit label",
-      element: (
-        <LabelDetailPanel
-          label={label as Label}
-          mode="edit"
-          onRemoveLabel={async (label) => {
-            await onRemoveLabel(label);
-            goBack();
-          }}
-          onSaveLabel={async (label) => {
-            await onSaveEditLabel(label);
-            goBack();
-          }}
-        />
-      ),
+      panelType: "edit",
     });
+    setEditingLabel(label);
   }
 
   return (
@@ -287,7 +257,48 @@ const LabelsModal = ({
       )}
       <h4 className="mt-4 px-12 text-center">{currentPanel.title}</h4>
       <div className="mt-4 pb-4 flex-1 overflow-y-auto">
-        <currentPanel.element />
+        {currentPanel.panelType === "list" && (
+          <LabelListPanel
+            onClickEditLabel={handleClickEditBtn}
+            allLabels={allLabels}
+            selectedLabels={selectedLabels}
+            onAddLabel={onAddLabel}
+            onRemoveLabel={onRemoveLabel}
+            onClickCreateNewLabel={() =>
+              pushPanel({
+                title: "Create label",
+                panelType: "create",
+              })
+            }
+          />
+        )}
+
+        {currentPanel.panelType === "edit" && (
+          <LabelDetailPanel
+            label={editingLabel as Label}
+            mode="edit"
+            onRemoveLabel={async (label) => {
+              await onRemoveLabel(label);
+              setEditingLabel(undefined);
+              goBack();
+            }}
+            onSaveLabel={async (label) => {
+              await onSaveEditLabel(label);
+              setEditingLabel(undefined);
+              goBack();
+            }}
+          />
+        )}
+
+        {currentPanel.panelType === "create" && (
+          <LabelDetailPanel
+            mode="create"
+            onCreateLabel={async (label) => {
+              await onCreateLabel(label);
+              goBack();
+            }}
+          />
+        )}
       </div>
     </div>
   );
