@@ -130,7 +130,7 @@ export const CardDetailModal = ({
     },
   });
 
-  const addLabelMutation = useMutation({
+  const updateLabelListMutation = useMutation({
     async mutationFn({ cardId, labelIds }: UpdateLabelListArgs) {
       return (
         await axiosInstance.put(`/board-card`, { cardId, labels: labelIds })
@@ -161,7 +161,7 @@ export const CardDetailModal = ({
       cardId: card.id,
       labelIds: card.Labels.map((lbl) => lbl.id).concat(label.id),
     };
-    await addLabelMutation.mutateAsync(payload);
+    await updateLabelListMutation.mutateAsync(payload);
 
     dispatch(updateLabelList(payload));
   }
@@ -169,6 +169,15 @@ export const CardDetailModal = ({
   async function handleRemoveLabel(label: Label): Promise<void> {
     await removeLabelMutation.mutateAsync({ labelId: label.id });
     dispatch(removeLabel(label));
+  }
+
+  async function handleUnaddLabel(label: Label): Promise<void> {
+    const payload = {
+      cardId: card.id,
+      labelIds: card.Labels.filter((lbl) => lbl.id !== label.id).map(label => label.id),
+    };
+    await updateLabelListMutation.mutateAsync(payload);
+    dispatch(updateLabelList(payload));
   }
 
   async function handleCreateLabel(
@@ -282,9 +291,10 @@ export const CardDetailModal = ({
               </div>
               {labelDropdownAnchorRef?.current !== undefined && (
                 <LabelsModal
-                  onCloseModal={handleCloseLabelModal}
+                  onCloseDropdown={handleCloseLabelModal}
                   onCreateLabel={handleCreateLabel}
                   onSaveEditLabel={handleSaveEditLabel}
+                  onUnaddLabel={handleUnaddLabel}
                   anchor={labelDropdownAnchorRef.current as HTMLElement}
                   allLabels={allLabels}
                   onAddLabel={handleAddLabel}

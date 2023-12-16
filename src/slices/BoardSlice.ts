@@ -126,6 +126,7 @@ const boardSlice = createSlice({
     },
 
     removeLabel(state, { payload }: PayloadAction<Label>) {
+      console.log(state.board?.BoardColumns);
       // Remove label in board
       state.board!.BoardLabels = state.board!.BoardLabels.filter(
         (label) => label.id !== payload.id
@@ -134,12 +135,12 @@ const boardSlice = createSlice({
       // Remove label in each card
       state.board!.BoardColumns = state.board!.BoardColumns.map((col) => ({
         ...col,
-        BoardColumnCards: {
+        BoardColumnCards: [
           ...col.BoardColumnCards.map((card) => ({
             ...card,
             Labels: card.Labels.filter((label) => label.id !== payload.id),
           })),
-        },
+        ],
       }));
 
       return state;

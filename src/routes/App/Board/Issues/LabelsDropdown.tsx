@@ -1,12 +1,11 @@
 import { useState } from "react";
-import BackIcon from "remixicon-react/ArrowLeftLineIcon";
-import CloseIcon from "remixicon-react/CloseLineIcon";
 import EditIcon from "remixicon-react/EditLineIcon";
 import Button from "../../../../components/Button";
+import DropdownPanel from "../../../../components/DropdownPanel";
 import FormField from "../../../../components/FormField";
 import FormInput from "../../../../components/FormInput";
 import FormLabel from "../../../../components/FormLabel";
-import useRefresh from "../../../../hooks/useRefresh";
+import usePanelStack from "../../../../hooks/usePanelStack";
 import { Label } from "../../../../types/Board";
 import { bgTextColorPair, getTextColor } from "../../../../utils/labelUtils";
 
@@ -14,20 +13,18 @@ export interface LabelsModalProps {
   selectedLabels: Label[];
   allLabels: Label[];
   onAddLabel: (label: Label) => Promise<void> | void;
+  onUnaddLabel: (label: Label) => Promise<void> | void;
   onRemoveLabel: (label: Label) => Promise<void> | void;
   onCreateLabel: (label: Pick<Label, "name" | "color">) => Promise<void> | void;
   onSaveEditLabel: (label: Label) => Promise<void> | void;
-  onCloseModal: () => void;
+  onCloseDropdown: () => void;
   anchor: HTMLElement;
 }
-
-const MODAL_MARGIN = 4;
-
 interface LabelListPanelProps {
   selectedLabels: Label[];
   allLabels: Label[];
   onAddLabel: (label: Label) => void;
-  onRemoveLabel: (label: Label) => void;
+  onUnaddLabel: (label: Label) => void;
   onClickEditLabel: (label: Label) => void;
   onClickCreateNewLabel: () => void;
 }
@@ -35,7 +32,7 @@ interface LabelListPanelProps {
 const LabelListPanel = ({
   allLabels,
   onAddLabel,
-  onRemoveLabel,
+  onUnaddLabel,
   onClickCreateNewLabel,
   onClickEditLabel,
   selectedLabels,
@@ -52,7 +49,7 @@ const LabelListPanel = ({
               checked={selectedLabels.some((l) => l.id === label.id)}
               onChange={() =>
                 selectedLabels.some((l) => l.id === label.id)
-                  ? onRemoveLabel(label)
+                  ? onUnaddLabel(label)
                   : onAddLabel(label)
               }
               id={String(label.id)}
@@ -180,49 +177,25 @@ const LabelDetailPanel = (props: LabelDetailPanelProps) => {
   );
 };
 
-interface LabelStackData {
-  title?: string;
-  panelType: PanelType;
-
-}
-
 type PanelType = "create" | "edit" | "list";
 
 const LabelsModal = ({
   allLabels,
   selectedLabels,
   anchor,
-  onCloseModal,
+  onCloseDropdown,
   onAddLabel,
   onRemoveLabel,
   onCreateLabel,
   onSaveEditLabel,
+  onUnaddLabel,
 }: LabelsModalProps) => {
-  const refresh = useRefresh();
-
-  const [panelStack, setPanelStack] = useState<LabelStackData[]>([
-    {
-      title: "Labels",
-      panelType: "list",
-    },
-  ]);
-  const currentPanel = panelStack[panelStack.length - 1];
-  const [editingLabel, setEditingLabel] = useState<Label | undefined>(undefined);
-
-  function goBack() {
-    setPanelStack((panelStack) => {
-      if (panelStack.length > 1) {
-        return panelStack.slice(0, -1);
-      }
-      return panelStack;
-    });
-    refresh();
-  }
-
-  function pushPanel(data: { title?: string; panelType: PanelType }) {
-    setPanelStack((panelStack) => panelStack.concat(data));
-    refresh();
-  }
+  const { panelStack, currentPanel, goBack, pushPanel } = usePanelStack<PanelType>({
+    rootPanel: { panelType: "list", title: "Labels" },
+  });
+  const [editingLabel, setEditingLabel] = useState<Label | undefined>(
+    undefined
+  );
 
   function handleClickEditBtn(label: Label) {
     pushPanel({
@@ -233,37 +206,21 @@ const LabelsModal = ({
   }
 
   return (
-    <div
-      style={{ top: anchor.offsetTop + anchor.offsetHeight + MODAL_MARGIN }}
-      className="absolute flex flex-col rounded-lg bg-white w-80 h-96 border border-gray-300 shadow-lg"
+    <DropdownPanel
+      anchor={anchor}
+      canGoBack={panelStack.length > 1}
+      onClickGoBack={goBack}
+      onCloseDropdown={onCloseDropdown}
+      title={currentPanel.title}
     >
-      <Button
-        $variant="ghost"
-        $shape="square"
-        className="absolute right-4 top-2"
-        onClick={onCloseModal}
-      >
-        <CloseIcon size={18} />
-      </Button>
-      {panelStack.length > 1 && (
-        <Button
-          $variant="ghost"
-          $shape="square"
-          className="absolute left-4 top-2"
-          onClick={goBack}
-        >
-          <BackIcon size={18} />
-        </Button>
-      )}
-      <h4 className="mt-4 px-12 text-center">{currentPanel.title}</h4>
-      <div className="mt-4 pb-4 flex-1 overflow-y-auto">
+      <>
         {currentPanel.panelType === "list" && (
           <LabelListPanel
             onClickEditLabel={handleClickEditBtn}
             allLabels={allLabels}
             selectedLabels={selectedLabels}
             onAddLabel={onAddLabel}
-            onRemoveLabel={onRemoveLabel}
+            onUnaddLabel={onUnaddLabel}
             onClickCreateNewLabel={() =>
               pushPanel({
                 title: "Create label",
@@ -299,8 +256,8 @@ const LabelsModal = ({
             }}
           />
         )}
-      </div>
-    </div>
+      </>
+    </DropdownPanel>
   );
 };
 
