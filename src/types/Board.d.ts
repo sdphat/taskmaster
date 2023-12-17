@@ -1,4 +1,5 @@
-export interface Board {
+export type BoardRole = "COLLABORATOR" | "ADMIN" | "OBSERVER";
+export class Board {
   id: number;
   name: string;
   backgroundUrl: string;
@@ -7,46 +8,52 @@ export interface Board {
   BoardMembers: BoardMember[];
 }
 
-export interface BoardColumn {
+export class BoardColumn {
   name: string;
   id: number;
   BoardColumnCards: BoardColumnCard[];
 }
 
-export interface BoardColumnCard {
+export class BoardColumnCard {
   id: number;
   cardIdx: number;
   Comments: Comment[];
   description: string;
-  dueDate: null | string;
+  dueDate: null | Date;
   Labels: Label[];
-  Members: Member[];
   summary: string;
+  BoardColumnCardMembers: BoardColumnCardMember[];
 }
 
 export class Comment {
   id: number;
-  createdDate: string;
   content: string;
-  Creator: Member;
-  boardColumnCardId: number;
+  createdDate: Date;
+  Creator: BoardMember;
 }
 
-export interface Label {
+export class Label {
   id: number;
   name: string;
   color: string;
+  boardId: number;
+  boardColumnCardId: number | null;
 }
 
-export interface BoardMember {
-  Member: Member;
-  memberRole: string;
-  memberId: number;
+export class BoardMember {
+  id: number;
+  User: User;
+  memberRole: BoardRole;
 }
 
-export interface Member {
+export class User {
   id: number;
   email: string;
   fullName: string;
   avatarUrl: string;
+}
+
+export class BoardColumnCardMember {
+  boardMemberId: number;
+  Member: BoardMember;
 }

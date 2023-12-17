@@ -87,13 +87,13 @@ const CardActivities = ({ profile, comments, onSave }: CardActivitiesProps) => {
           <Line
             className="items-start"
             leftContent={
-              <img src={comment.Creator.avatarUrl} className="w-8 h-8" />
+              <img src={comment.Creator.User.avatarUrl} className="w-8 h-8" />
             }
             key={comment.id}
           >
             <div className="flex-1">
               <div>
-                <span className="font-bold">{comment.Creator.fullName}</span>
+                <span className="font-bold">{comment.Creator.User.fullName}</span>
                 <span className="text-xs ml-2">{formatDistance(new Date(comment.createdDate), new Date(), { addSuffix: true })}</span>
               </div>
               <div className="border border-gray-300 rounded bg-white w-full p-2 shadow-md">
