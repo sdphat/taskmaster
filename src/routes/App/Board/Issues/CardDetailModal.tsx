@@ -20,27 +20,37 @@ import Button, { ButtonProps } from "../../../../components/Button";
 import FormInput from "../../../../components/FormInput";
 import ModalContainer from "../../../../components/ModalContainer";
 import useRefresh from "../../../../hooks/useRefresh";
-import { BoardColumn, BoardColumnCard, Label } from "../../../../types/Board";
+import {
+  Board,
+  BoardColumn,
+  BoardColumnCard,
+  BoardColumnCardMember,
+  BoardMember,
+  Label,
+} from "../../../../types/Board";
 import { BriefProfile } from "../../../../types/BriefProfile";
 import CardActivities from "./CardActivities";
 import CardDescription from "./CardDescription";
 import CardLabels from "./CardLabels";
-import LabelsModal from "./LabelsDropdown";
+import LabelsDropdown from "./LabelsDropdown";
 import axiosInstance from "../../../../api/axios";
 import { useMutation } from "react-query";
 import { useAppDispatch } from "../../../../store";
 import {
+  addCardMember,
   createLabel,
+  removeCardMember,
   removeLabel,
   updateLabel,
   updateLabelList,
 } from "../../../../slices/BoardSlice";
+import BoardMembersDropdown from "./BoardMembersDropdown";
+import CardMembers from "./CardMembers";
 export interface CardDetailModalProps {
-  boardId: number;
+  board: Board;
   card: BoardColumnCard;
   profile: BriefProfile;
   columnCard: BoardColumn;
-  allLabels: Label[];
   onSaveTitle: (title: string) => void;
   onSaveComment: (comment: string) => void;
   onSaveDescription: (description: string) => void;
@@ -103,11 +113,20 @@ interface RemoveLabelMutationArgs {
   labelId: number;
 }
 
+interface AddMemberMutationArgs {
+  cardId: number;
+  memberId: number;
+}
+
+interface RemoveMemberMutationArgs {
+  cardId: number;
+  memberId: number;
+}
+
 export const CardDetailModal = ({
-  boardId,
+  board,
   card,
   columnCard,
-  allLabels,
   profile,
   onClose,
   onSaveTitle,
@@ -116,6 +135,7 @@ export const CardDetailModal = ({
 }: CardDetailModalProps) => {
   const refresh = useRefresh();
   const labelDropdownAnchorRef = useRef<HTMLElement>();
+  const membersDropdownAnchorRef = useRef<HTMLElement>();
   const dispatch = useAppDispatch();
 
   const createLabelMutation = useMutation({
@@ -141,6 +161,20 @@ export const CardDetailModal = ({
   const removeLabelMutation = useMutation({
     async mutationFn({ labelId }: RemoveLabelMutationArgs) {
       return (await axiosInstance.delete(`/card-label/${labelId}`)).data;
+    },
+  });
+
+  const addMemberMutation = useMutation({
+    async mutationFn(
+      args: AddMemberMutationArgs
+    ): Promise<BoardColumnCardMember> {
+      return (await axiosInstance.post(`/member/card`, args)).data;
+    },
+  });
+
+  const removeMemberMutation = useMutation({
+    async mutationFn(args: RemoveMemberMutationArgs) {
+      return (await axiosInstance.delete(`/member/card`, { data: args })).data;
     },
   });
 
@@ -174,7 +208,9 @@ export const CardDetailModal = ({
   async function handleUnaddLabel(label: Label): Promise<void> {
     const payload = {
       cardId: card.id,
-      labelIds: card.Labels.filter((lbl) => lbl.id !== label.id).map(label => label.id),
+      labelIds: card.Labels.filter((lbl) => lbl.id !== label.id).map(
+        (label) => label.id
+      ),
     };
     await updateLabelListMutation.mutateAsync(payload);
     dispatch(updateLabelList(payload));
@@ -184,7 +220,7 @@ export const CardDetailModal = ({
     label: Pick<Label, "name" | "color">
   ): Promise<void> {
     const newLabel = await createLabelMutation.mutateAsync({
-      boardId,
+      boardId: board.id,
       ...label,
     });
     dispatch(createLabel(newLabel));
@@ -202,9 +238,39 @@ export const CardDetailModal = ({
     refresh();
   }
 
-  function handleCloseLabelModal(): void {
+  function handleCloseLabelDropdown(): void {
     labelDropdownAnchorRef.current = undefined;
     refresh();
+  }
+
+  function handleCloseMembersDropdown() {
+    membersDropdownAnchorRef.current = undefined;
+    refresh();
+  }
+
+  function handleMembersBtnCLick(event: MouseEvent<HTMLButtonElement>): void {
+    membersDropdownAnchorRef.current !== event.currentTarget
+      ? (membersDropdownAnchorRef.current = event.currentTarget)
+      : (membersDropdownAnchorRef.current = undefined);
+    refresh();
+  }
+
+  async function handleAddMember(cardMember: BoardMember): Promise<void> {
+    const newCardMember = await addMemberMutation.mutateAsync({
+      cardId: card.id,
+      memberId: cardMember.id,
+    });
+
+    dispatch(addCardMember({ cardId: card.id, cardMember: newCardMember }));
+  }
+
+  async function handleRemoveMember(cardMember: BoardMember): Promise<void> {
+    await removeMemberMutation.mutateAsync({
+      cardId: card.id,
+      memberId: cardMember.id,
+    });
+
+    dispatch(removeCardMember({ cardId: card.id, memberId: cardMember.id }));
   }
 
   return (
@@ -233,6 +299,7 @@ export const CardDetailModal = ({
         <div className={`flex ${CARD_PADDING}`}>
           <div className="flex-1 space-y-6 pr-4">
             <CardLabels labels={card.Labels} />
+            <CardMembers cardMembers={card.BoardColumnCardMembers} />
             <CardDescription
               description={card.description}
               onSave={handleSaveDescription}
@@ -253,7 +320,10 @@ export const CardDetailModal = ({
                 <ActionButton icon={<WatchIcon size={actionIconSize} />}>
                   Watch
                 </ActionButton>
-                <ActionButton icon={<MemberIcon size={actionIconSize} />}>
+                <ActionButton
+                  onClick={handleMembersBtnCLick}
+                  icon={<MemberIcon size={actionIconSize} />}
+                >
                   Members
                 </ActionButton>
                 <ActionButton
@@ -290,16 +360,27 @@ export const CardDetailModal = ({
                 </ActionButton>
               </div>
               {labelDropdownAnchorRef?.current !== undefined && (
-                <LabelsModal
-                  onCloseDropdown={handleCloseLabelModal}
+                <LabelsDropdown
+                  onCloseDropdown={handleCloseLabelDropdown}
                   onCreateLabel={handleCreateLabel}
                   onSaveEditLabel={handleSaveEditLabel}
                   onUnaddLabel={handleUnaddLabel}
                   anchor={labelDropdownAnchorRef.current as HTMLElement}
-                  allLabels={allLabels}
+                  allLabels={board.BoardLabels}
                   onAddLabel={handleAddLabel}
                   onRemoveLabel={handleRemoveLabel}
                   selectedLabels={card.Labels}
+                />
+              )}
+
+              {membersDropdownAnchorRef.current !== undefined && (
+                <BoardMembersDropdown
+                  onAddMember={handleAddMember}
+                  onRemoveMember={handleRemoveMember}
+                  anchor={membersDropdownAnchorRef.current}
+                  onCloseDropdown={handleCloseMembersDropdown}
+                  members={board.BoardMembers}
+                  selectedCardMembers={card.BoardColumnCardMembers}
                 />
               )}
             </div>

@@ -179,7 +179,7 @@ const LabelDetailPanel = (props: LabelDetailPanelProps) => {
 
 type PanelType = "create" | "edit" | "list";
 
-const LabelsModal = ({
+const LabelsDropdown = ({
   allLabels,
   selectedLabels,
   anchor,
@@ -261,4 +261,4 @@ const LabelsModal = ({
   );
 };
 
-export default LabelsModal;
+export default LabelsDropdown;

@@ -1,6 +1,11 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { Board, BoardColumnCard, Label } from "../types/Board";
+import {
+  Board,
+  BoardColumnCard,
+  BoardColumnCardMember,
+  Label,
+} from "../types/Board";
 
 export interface BoardSliceState {
   board: Board | undefined;
@@ -24,6 +29,16 @@ export interface UpdateCardPayload extends BoardColumnCard {
 export interface UpdateLabelListPayload {
   cardId: number;
   labelIds: number[];
+}
+
+interface AddCardMemberPayload {
+  cardMember: BoardColumnCardMember;
+  cardId: number;
+}
+
+interface RemoveCardMemberPayload {
+  cardId: number;
+  memberId: number;
 }
 
 function sortBoardInPlace(board: Board) {
@@ -159,6 +174,37 @@ const boardSlice = createSlice({
         payload.labelIds.includes(label.id)
       );
     },
+
+    removeCardMember(
+      state,
+      { payload }: PayloadAction<RemoveCardMemberPayload>
+    ) {
+      const card = state
+        .board!.BoardColumns.flatMap((col) => col.BoardColumnCards)
+        .find((card) => card.id === payload.cardId);
+
+      if (!card) {
+        return;
+      }
+
+      card.BoardColumnCardMembers = card.BoardColumnCardMembers.filter(
+        (m) => m.Member.id !== payload.memberId
+      );
+    },
+
+    addCardMember(state, { payload }: PayloadAction<AddCardMemberPayload>) {
+      const card = state
+        .board!.BoardColumns.flatMap((col) => col.BoardColumnCards)
+        .find((card) => card.id === payload.cardId);
+
+      if (!card) {
+        return;
+      }
+
+      console.log(payload.cardMember);
+
+      card.BoardColumnCardMembers.push(payload.cardMember);
+    },
   },
 });
 
@@ -172,5 +218,7 @@ export const {
   updateCard,
   createLabel,
   removeLabel,
+  addCardMember,
+  removeCardMember,
 } = boardSlice.actions;
 export const boardSelector = (state: RootState) => state.board;
