@@ -75,7 +75,7 @@ const Register = () => {
   } = useForm<RegisterInput>({
     resolver: zodResolver(schema),
     mode: "onSubmit",
-    reValidateMode: "onSubmit",
+    reValidateMode: "onChange",
   });
   const navigate = useNavigate();
 
