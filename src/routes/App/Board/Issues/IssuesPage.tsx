@@ -19,6 +19,7 @@ import {
 } from "../../../../types/Board";
 import BoardColumn, { BoardColumnProps } from "./BoardColumn";
 import CardDetailModal, { CardDetailModalProps } from "./CardDetailModal";
+import Header from "./Header";
 interface MoveCardArgs {
   fromColumn: number;
   fromIdx: number;
@@ -181,8 +182,13 @@ const IssuesPage = () => {
     dispatch(updateCard(card));
   }
 
+  if (!board) {
+    return <></>;
+  }
+
   return (
-    <div>
+    <div className="flex-1 min-w-0 overflow-auto">
+      <Header board={board} />
       <DragDropContext onDragEnd={onCardDragEnd}>
         <div className="p-4">
           <div className="flex gap-4 items-start">

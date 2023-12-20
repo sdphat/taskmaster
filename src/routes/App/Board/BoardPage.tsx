@@ -33,45 +33,46 @@ const BoardPage = () => {
   const [openSidebar, setOpenSidebar] = useState(true);
 
   return (
-    <div className="flex w-full h-full">
-      <div
-        className={`relative flex-none border-2 border-t-0 border-gray-200 h-full transition-all ${
-          openSidebar
-            ? "translate-x-0 w-64"
-            : "-translate-x-[100%] border-r-0 w-0 overflow-hidden"
-        }`}
-      >
-        <div className="border-b-2 border-gray-200 px-4 py-3">
-          <div className="flex items-start gap-2">
-            <FlashlightFill className="flex-none" />{" "}
-            <span className="break-all">{data?.name}</span>
+    <div className="flex w-full h-full max-w-[100vw]">
+      <div className="flex relative">
+        <div
+          className={`relative flex-none border-2 border-t-0 border-gray-200 h-full transition-all ${
+            openSidebar
+              ? "translate-x-0 w-64"
+              : "-translate-x-[100%] border-r-0 w-0 overflow-hidden"
+          }`}
+        >
+          <div className="border-b-2 border-gray-200 px-4 py-3">
+            <div className="flex items-start gap-2">
+              <FlashlightFill className="flex-none" />{" "}
+              <span className="break-all">{data?.name}</span>
+            </div>
+          </div>
+          <div className="px-4 py-3 space-y-4">
+            <NavLink to="/issues">
+              <FileCopyLine />
+              Issues
+            </NavLink>
+            <NavLink to="/settings">
+              <Settings4Line />
+              Project Settings
+            </NavLink>
           </div>
         </div>
-        <div className="px-4 py-3 space-y-4">
-          <NavLink to="/issues">
-            <FileCopyLine />
-            Issues
-          </NavLink>
-          <NavLink to="/settings">
-            <Settings4Line />
-            Project Settings
-          </NavLink>
-        </div>
-      </div>
-      {/* Ledge to open drawer */}
-      <div
-        className={`relative group h-full w-4 top-0 -left-[1px] transition-all
+        {/* Ledge to open drawer */}
+        <div
+          className={`absolute group h-full w-4 top-0 right-0 translate-x-[calc(100%-1px)] transition-all
             ${
               openSidebar
                 ? "bg-transparent border-0"
                 : "bg-white border-r-2 border-gray-200 hover:bg-gray-300 hover:border-gray-400 cursor-pointer"
             }
           `}
-        onClick={() => !openSidebar && setOpenSidebar(true)}
-      >
-        {/* Open/Close drawer button */}
-        <button
-          className={`absolute grid place-items-center
+          onClick={() => !openSidebar && setOpenSidebar(true)}
+        >
+          {/* Open/Close drawer button */}
+          <button
+            className={`absolute grid place-items-center
               bottom-[50%] translate-y-[50%]
               rounded-full border-2 border-gray-200 bg-white 
               w-6 h-6 shadow-sm
@@ -80,18 +81,17 @@ const BoardPage = () => {
                   ? "hover:bg-gray-100 left-0 -translate-x-[50%]"
                   : "group-hover:bg-gray-100 right-0 translate-x-[50%]"
               }`}
-          onClick={() => setOpenSidebar(!openSidebar)}
-        >
-          {openSidebar ? (
-            <ArrowLeftLine className="w-4 h-4" />
-          ) : (
-            <ArrowRightLine className="w-4 h-4" />
-          )}
-        </button>
+            onClick={() => setOpenSidebar(!openSidebar)}
+          >
+            {openSidebar ? (
+              <ArrowLeftLine className="w-4 h-4" />
+            ) : (
+              <ArrowRightLine className="w-4 h-4" />
+            )}
+          </button>
+        </div>
       </div>
-      <div>
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 };
