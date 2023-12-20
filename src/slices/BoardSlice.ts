@@ -201,9 +201,15 @@ const boardSlice = createSlice({
         return;
       }
 
-      console.log(payload.cardMember);
-
       card.BoardColumnCardMembers.push(payload.cardMember);
+    },
+
+    removeCard(state, { payload: cardId }: PayloadAction<number>) {
+      state.board!.BoardColumns.forEach((col) => {
+        col.BoardColumnCards = col.BoardColumnCards.filter(
+          (card) => card.id !== cardId
+        );
+      });
     },
   },
 });
@@ -213,6 +219,7 @@ export const {
   updateLabel,
   updateLabelList,
   createCard,
+  removeCard,
   moveCardTo,
   setBoard,
   updateCard,

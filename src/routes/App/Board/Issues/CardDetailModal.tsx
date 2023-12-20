@@ -39,6 +39,7 @@ import { useAppDispatch } from "../../../../store";
 import {
   addCardMember,
   createLabel,
+  removeCard,
   removeCardMember,
   removeLabel,
   updateLabel,
@@ -178,6 +179,12 @@ export const CardDetailModal = ({
     },
   });
 
+  const removeCardMutation = useMutation({
+    async mutationFn(cardId: number) {
+      return (await axiosInstance.delete(`/board-card/${cardId}`)).data;
+    },
+  });
+
   function handleSaveComment(comment: string): void {
     onSaveComment(comment);
   }
@@ -273,6 +280,12 @@ export const CardDetailModal = ({
     dispatch(removeCardMember({ cardId: card.id, memberId: cardMember.id }));
   }
 
+  async function handleRemoveCard(): Promise<void> {
+    await removeCardMutation.mutateAsync(card.id);
+    dispatch(removeCard(card.id));
+    onClose();
+  }
+
   return (
     <ModalContainer onClose={onClose}>
       <div className="bg-white rounded-lg max-w-5xl w-full pt-4 pb-8 h-max">
@@ -353,6 +366,7 @@ export const CardDetailModal = ({
                   Share
                 </ActionButton>
                 <ActionButton
+                  onClick={handleRemoveCard}
                   icon={<RemoveIcon size={actionIconSize} />}
                   $variant="danger"
                 >
