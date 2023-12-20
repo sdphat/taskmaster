@@ -15,7 +15,7 @@ const Header = ({ board }: HeaderProps) => {
       <div className="flex">
         <div className="flex gap-1">
           {board.BoardMembers.map((member) => (
-            <span className="rounded-full overflow-hidden">
+            <span key={member.id} className="rounded-full overflow-hidden">
               <img src={member.User.avatarUrl} className="w-8 h-8" alt="" />
             </span>
           ))}
