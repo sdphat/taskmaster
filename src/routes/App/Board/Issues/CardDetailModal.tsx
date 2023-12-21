@@ -47,6 +47,7 @@ import {
 } from "../../../../slices/BoardSlice";
 import BoardMembersDropdown from "./BoardMembersDropdown";
 import CardMembers from "./CardMembers";
+import DropdownRemoveAssertion from "../../../../components/DropdownRemoveAssertion";
 export interface CardDetailModalProps {
   board: Board;
   card: BoardColumnCard;
@@ -137,6 +138,7 @@ export const CardDetailModal = ({
   const refresh = useRefresh();
   const labelDropdownAnchorRef = useRef<HTMLElement>();
   const membersDropdownAnchorRef = useRef<HTMLElement>();
+  const removeConfirmDropdownAnchorRef = useRef<HTMLElement>();
   const dispatch = useAppDispatch();
 
   const createLabelMutation = useMutation({
@@ -280,10 +282,15 @@ export const CardDetailModal = ({
     dispatch(removeCardMember({ cardId: card.id, memberId: cardMember.id }));
   }
 
-  async function handleRemoveCard(): Promise<void> {
+  async function handleRemoveCard() {
     await removeCardMutation.mutateAsync(card.id);
     dispatch(removeCard(card.id));
     onClose();
+  }
+
+  async function handleClickRemove(e: MouseEvent<HTMLElement>): Promise<void> {
+    removeConfirmDropdownAnchorRef.current = e.currentTarget;
+    refresh();
   }
 
   return (
@@ -366,7 +373,7 @@ export const CardDetailModal = ({
                   Share
                 </ActionButton>
                 <ActionButton
-                  onClick={handleRemoveCard}
+                  onClick={handleClickRemove}
                   icon={<RemoveIcon size={actionIconSize} />}
                   $variant="danger"
                 >
@@ -395,6 +402,17 @@ export const CardDetailModal = ({
                   onCloseDropdown={handleCloseMembersDropdown}
                   members={board.BoardMembers}
                   selectedCardMembers={card.BoardColumnCardMembers}
+                />
+              )}
+
+              {removeConfirmDropdownAnchorRef.current !== undefined && (
+                <DropdownRemoveAssertion
+                  anchor={removeConfirmDropdownAnchorRef.current}
+                  onClickDeleteConfirm={handleRemoveCard}
+                  onCloseDropdown={() => {
+                    removeConfirmDropdownAnchorRef.current = undefined;
+                    refresh();
+                  }}
                 />
               )}
             </div>

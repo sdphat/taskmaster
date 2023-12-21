@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import BackIcon from "remixicon-react/ArrowLeftLineIcon";
 import CloseIcon from "remixicon-react/CloseLineIcon";
 import Button from "./Button";
+import tw from "tailwind-styled-components";
 
 const DROPDOWN_MARGIN = 4;
 
@@ -11,8 +12,22 @@ export interface DropdownPanelProps {
   canGoBack: boolean;
   anchor: HTMLElement;
   children: ReactNode;
+  className?: string;
   title: ReactNode;
 }
+
+const DropdownPanelWrapper = tw.div`
+  absolute 
+  flex 
+  flex-col
+  rounded-lg
+  bg-white
+  w-80 
+  h-96 
+  border 
+  border-gray-300 
+  shadow-lg
+`;
 
 const DropdownPanel = ({
   anchor,
@@ -21,11 +36,12 @@ const DropdownPanel = ({
   canGoBack,
   onClickGoBack,
   title,
+  className,
 }: DropdownPanelProps) => {
   return (
-    <div
+    <DropdownPanelWrapper
       style={{ top: anchor.offsetTop + anchor.offsetHeight + DROPDOWN_MARGIN }}
-      className="absolute flex flex-col rounded-lg bg-white w-80 h-96 border border-gray-300 shadow-lg"
+      className={className}
     >
       <Button
         $variant="ghost"
@@ -47,7 +63,7 @@ const DropdownPanel = ({
       )}
       <h4 className="mt-4 px-12 text-center">{title}</h4>
       <div className="mt-4 pb-4 flex-1 overflow-y-auto">{children}</div>
-    </div>
+    </DropdownPanelWrapper>
   );
 };
 
