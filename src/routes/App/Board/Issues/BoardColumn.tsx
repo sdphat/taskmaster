@@ -73,7 +73,7 @@ const BoardColumn = ({
   );
 
   return (
-    <div className="rounded-lg bg-gray-100 w-80 p-3 transition-all">
+    <div className="flex-none rounded-lg bg-gray-100 w-80 p-3 transition-all">
       <div className="flex items-center">
         <div className="break-all px-2 text-sm text-[#44546f] font-semibold">
           {column.name}

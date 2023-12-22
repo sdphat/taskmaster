@@ -7,6 +7,7 @@ import useProfile from "../../../../hooks/useProfile";
 import {
   boardSelector,
   createCard,
+  createColumn,
   moveCardTo,
   updateCard,
 } from "../../../../slices/BoardSlice";
@@ -20,6 +21,7 @@ import {
 import BoardColumn, { BoardColumnProps } from "./BoardColumn";
 import CardDetailModal, { CardDetailModalProps } from "./CardDetailModal";
 import Header from "./Header";
+import NewColumnForm from "../NewColumnForm";
 interface MoveCardArgs {
   fromColumn: number;
   fromIdx: number;
@@ -56,6 +58,11 @@ export interface CreateCommentArgs {
   content: string;
 }
 
+export interface CreateColumnArgs {
+  boardId: number;
+  columnName: string;
+}
+
 const IssuesPage = () => {
   const { data: briefProfile } = useProfile();
   const { board } = useSelector<RootState, ReturnType<typeof boardSelector>>(
@@ -90,6 +97,17 @@ const IssuesPage = () => {
       args: CreateCommentArgs
     ): Promise<CreateCommentMutationReturn> => {
       return (await axiosInstance.post("/comment", args)).data;
+    },
+  });
+
+  const createColumnMutation = useMutation({
+    mutationFn: async ({
+      boardId,
+      columnName,
+    }: CreateColumnArgs): Promise<BoardColumnType> => {
+      return (
+        await axiosInstance.post("/board-column", { columnName, boardId })
+      ).data;
     },
   });
 
@@ -182,25 +200,32 @@ const IssuesPage = () => {
     dispatch(updateCard(card));
   }
 
+  async function handleAddColumn(columnName: string): Promise<void> {
+    const newColumn = await createColumnMutation.mutateAsync({
+      columnName,
+      boardId: board!.id,
+    });
+    dispatch(createColumn(newColumn));
+  }
+
   if (!board) {
     return <></>;
   }
 
   return (
-    <div className="flex-1 min-w-0 overflow-auto">
+    <div className="flex flex-col self-stretch flex-1 min-w-0">
       <Header board={board} />
       <DragDropContext onDragEnd={onCardDragEnd}>
-        <div className="p-4">
-          <div className="flex gap-4 items-start">
-            {board?.BoardColumns.map((column) => (
-              <BoardColumn
-                onClickCard={handleClickCard}
-                onCreateCard={handleCreateCard}
-                key={column.id}
-                column={column}
-              />
-            ))}
-          </div>
+        <div className="flex-1 overflow-auto p-4 flex gap-4 items-start">
+          {board?.BoardColumns.map((column) => (
+            <BoardColumn
+              onClickCard={handleClickCard}
+              onCreateCard={handleCreateCard}
+              key={column.id}
+              column={column}
+            />
+          ))}
+          <NewColumnForm onAddColumn={handleAddColumn} />
         </div>
       </DragDropContext>
       {cardDetail && (

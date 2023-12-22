@@ -2,6 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import {
   Board,
+  BoardColumn,
   BoardColumnCard,
   BoardColumnCardMember,
   Label,
@@ -113,6 +114,10 @@ const boardSlice = createSlice({
       sortBoardInPlace(state.board);
     },
 
+    createColumn(state, { payload }: PayloadAction<BoardColumn>) {
+      state.board!.BoardColumns.push(payload);
+    },
+
     createLabel(state, action: PayloadAction<Label>) {
       state.board!.BoardLabels.push(action.payload);
     },
@@ -218,6 +223,7 @@ export const boardReducer = boardSlice.reducer;
 export const {
   updateLabel,
   updateLabelList,
+  createColumn,
   createCard,
   removeCard,
   moveCardTo,
