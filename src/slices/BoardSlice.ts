@@ -216,6 +216,12 @@ const boardSlice = createSlice({
         );
       });
     },
+
+    removeColumn(state, { payload: columnId }: PayloadAction<number>) {
+      state.board!.BoardColumns = state.board!.BoardColumns.filter(
+        (col) => col.id !== columnId
+      );
+    },
   },
 });
 
@@ -233,5 +239,6 @@ export const {
   removeLabel,
   addCardMember,
   removeCardMember,
+  removeColumn,
 } = boardSlice.actions;
 export const boardSelector = (state: RootState) => state.board;

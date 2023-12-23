@@ -9,6 +9,7 @@ import {
   createCard,
   createColumn,
   moveCardTo,
+  removeColumn,
   updateCard,
 } from "../../../../slices/BoardSlice";
 import { RootState, useAppDispatch } from "../../../../store";
@@ -111,6 +112,12 @@ const IssuesPage = () => {
     },
   });
 
+  const removeColumnMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return (await axiosInstance.delete(`/board-column/${id}`)).data;
+    },
+  });
+
   const [cardDetailPosition, setCardDetailPosition] = useState<{
     cardIdx: number;
     colId: number;
@@ -208,6 +215,11 @@ const IssuesPage = () => {
     dispatch(createColumn(newColumn));
   }
 
+  async function handleRemoveColumn(column: BoardColumnType) {
+    await removeColumnMutation.mutateAsync(column.id);
+    dispatch(removeColumn(column.id));
+  }
+
   if (!board) {
     return <></>;
   }
@@ -221,6 +233,7 @@ const IssuesPage = () => {
             <BoardColumn
               onClickCard={handleClickCard}
               onCreateCard={handleCreateCard}
+              onRemoveColumn={handleRemoveColumn}
               key={column.id}
               column={column}
             />

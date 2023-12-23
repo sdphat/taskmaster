@@ -8,6 +8,7 @@ import FormInputError from "../../../../components/FormInputError";
 import TextArea from "../../../../components/TextArea";
 import { BoardColumn as BoardColumnType } from "../../../../types/Board";
 import BoardCard, { BoardCardProps } from "./BoardCard";
+import BoardColumnOptionDropdown from "./BoardColumnOptionDropdown";
 export interface CreateCardArgs {
   boardColumnId: number;
   summary: string;
@@ -16,16 +17,19 @@ export interface BoardColumnProps {
   column: BoardColumnType;
   onCreateCard: (card: CreateCardArgs) => void;
   onClickCard: BoardCardProps["onClick"];
+  onRemoveColumn: (column: BoardColumnType) => void;
 }
 
 const BoardColumn = ({
   column,
   onCreateCard,
   onClickCard,
+  onRemoveColumn,
 }: BoardColumnProps) => {
   const [isAddingCard, setAddingCard] = useState(false);
   const [summary, setSummary] = useState("");
   const [error, setError] = useState("");
+  const [optionBtn, setOptionBtn] = useState<HTMLElement>();
 
   const handleCancelAddCard = () => {
     setAddingCard(false);
@@ -43,6 +47,11 @@ const BoardColumn = ({
     setSummary("");
     onCreateCard({ boardColumnId: column.id, summary: summary });
   };
+
+  function handleDeleteColumn() {
+    setOptionBtn(undefined);
+    onRemoveColumn(column);
+  }
 
   const addCardForm = (
     <div className="mt-2">
@@ -79,9 +88,21 @@ const BoardColumn = ({
           {column.name}
         </div>
         <div className="flex-1"></div>
-        <Button $variant="ghost" $shape="square" className="self-start">
+        <Button
+          onClick={(e) => setOptionBtn(e.currentTarget)}
+          $variant="ghost"
+          $shape="square"
+          className="self-start"
+        >
           <More2FillIcon size={16} />
         </Button>
+        {optionBtn && (
+          <BoardColumnOptionDropdown
+            anchor={optionBtn}
+            onCloseDropdown={() => setOptionBtn(undefined)}
+            onDeleteColumn={handleDeleteColumn}
+          />
+        )}
       </div>
 
       <Droppable droppableId={String(column.id)}>
