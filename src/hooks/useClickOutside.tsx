@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export interface UseClickOutsideArgs {
-  element: HTMLElement;
+  element: HTMLElement | undefined;
   onClickOutside: (event: MouseEvent) => void;
 }
 
@@ -9,16 +9,20 @@ const useClickOutside = ({ onClickOutside, element }: UseClickOutsideArgs) => {
   const [isOutside, setOutside] = useState(false);
   useEffect(() => {
     function handleClickOutside(this: Document, ev: globalThis.MouseEvent) {
-      const _isOutside = !(ev.target as Node).contains(element);
-      setOutside(_isOutside);
+      if (!element) {
+        return;
+      }
+
+      const _isOutside = !(element as Node).contains(ev.target as Node);
       if (_isOutside) {
         onClickOutside(ev);
       }
+      setOutside(_isOutside);
     }
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener("mouseup", handleClickOutside);
 
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("mouseup", handleClickOutside);
     };
   }, [element, onClickOutside]);
   return [isOutside];

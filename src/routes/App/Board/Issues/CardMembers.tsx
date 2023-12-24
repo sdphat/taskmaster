@@ -1,6 +1,5 @@
-import React from "react";
-import { Line } from "./CardDetailModal";
 import { BoardColumnCardMember } from "../../../../types/Board";
+import { Line } from "./CardDetailModal";
 
 export interface CardMembersProps {
   cardMembers: BoardColumnCardMember[];

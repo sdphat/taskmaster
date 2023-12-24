@@ -1,8 +1,9 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import BackIcon from "remixicon-react/ArrowLeftLineIcon";
 import CloseIcon from "remixicon-react/CloseLineIcon";
-import Button from "./Button";
 import tw from "tailwind-styled-components";
+import useClickOutside from "../hooks/useClickOutside";
+import Button from "./Button";
 
 const DROPDOWN_MARGIN = 4;
 
@@ -38,8 +39,18 @@ const DropdownPanel = ({
   title,
   className,
 }: DropdownPanelProps) => {
+  const [dropdownElement, setDropdownElement] = useState<HTMLElement>();
+  useClickOutside({
+    element: dropdownElement as HTMLElement,
+    onClickOutside: (ev) => {
+      if (!(anchor as Node).contains(ev.target as Node)) {
+        onCloseDropdown();
+      }
+    },
+  });
   return (
     <DropdownPanelWrapper
+      ref={(el) => setDropdownElement(el as HTMLElement)}
       style={{ top: anchor.offsetTop + anchor.offsetHeight + DROPDOWN_MARGIN }}
       className={className}
     >
