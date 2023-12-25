@@ -7,6 +7,7 @@ type BoardSummary = Pick<Board, "name" | "backgroundUrl" | "id">;
 
 const App = () => {
   const { data: allBoards } = useQuery({
+    queryKey: `all-boards`,
     queryFn: async (): Promise<BoardSummary[]> => {
       return (await axiosInstance.get("/board/all-boards")).data;
     },

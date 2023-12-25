@@ -1,5 +1,5 @@
-import { Member } from "./Board";
+import { User } from "./Board";
 
-export interface BriefProfile extends Omit<Member, "id"> {
+export interface BriefProfile extends Omit<User, "id"> {
   
 }
