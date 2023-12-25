@@ -1,18 +1,25 @@
 import { useRef, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import appIconWithText from "../../assets/app-icon-with-text.svg";
 import Button from "../../components/Button";
 import ROUTES from "../../constants/routes";
 import useProfile from "../../hooks/useProfile";
 import AccountDropdownItem from "./Board/AccountDropdownItem";
 import AccountDropdownSection from "./Board/AccountDropdownSection";
+import axiosInstance from "../../api/axios";
 
 const App = () => {
   const navBarRef = useRef<HTMLDivElement>(null);
   const [openAccountDropdown, setOpenAccountDropdown] = useState(false);
   const { data: briefProfile } = useProfile();
+  const navigate = useNavigate();
 
   const navBarHeight = navBarRef.current?.clientHeight ?? 0;
+
+  async function handleLogout() {
+    await axiosInstance.post("auth/logout");
+    navigate(ROUTES.LOGIN);
+  }
 
   return (
     <div className="h-screen flex flex-col">
@@ -65,7 +72,10 @@ const App = () => {
                 </AccountDropdownItem>
               </AccountDropdownSection>
               <AccountDropdownSection includeDivider={false}>
-                <AccountDropdownItem to={ROUTES.LOGOUT}>
+                <AccountDropdownItem
+                  to={{ pathname: window.location.pathname }}
+                  onClick={handleLogout}
+                >
                   Log out
                 </AccountDropdownItem>
               </AccountDropdownSection>
