@@ -1,0 +1,91 @@
+import { useRef, useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import appIconWithText from "../../assets/app-icon-with-text.svg";
+import Button from "../../components/Button";
+import ROUTES from "../../constants/routes";
+import useProfile from "../../hooks/useProfile";
+import AccountDropdownItem from "./Board/AccountDropdownItem";
+import AccountDropdownSection from "./Board/AccountDropdownSection";
+import axiosInstance from "../../api/axios";
+
+const AppLayout = () => {
+  const navBarRef = useRef<HTMLDivElement>(null);
+  const [openAccountDropdown, setOpenAccountDropdown] = useState(false);
+  const { data: briefProfile } = useProfile();
+  const navigate = useNavigate();
+
+  const navBarHeight = navBarRef.current?.clientHeight ?? 0;
+
+  async function handleLogout() {
+    await axiosInstance.post("auth/logout");
+    navigate(ROUTES.LOGIN);
+  }
+
+  return (
+    <div className="h-screen flex flex-col">
+      <div
+        ref={navBarRef}
+        className="flex items-center w-full gap-x-4 px-4 py-4 border-2 border-gray-200"
+      >
+        <img className="ml-2" src={appIconWithText} alt="" />
+        <div className="ml-4 space-x-4">
+          <button>Your work</button>
+          <button>Projects</button>
+          <Button>Create</Button>
+        </div>
+        <div className="flex-1"></div>
+        <div>
+          <button
+            onClick={() => setOpenAccountDropdown(!openAccountDropdown)}
+            className={`rounded-full w-11 h-11 outline-4 p-1 border-[5px] hover:border-gray-100 
+            ${openAccountDropdown ? "border-gray-100" : "border-transparent"}`}
+          >
+            <img
+              src={briefProfile?.avatarUrl}
+              alt=""
+              className="object-cover"
+            />
+          </button>
+          {openAccountDropdown && (
+            <div
+              style={{ top: navBarHeight }}
+              className="absolute right-4 w-80 
+            rounded-md border-2 bg-white border-gray-300 
+            shadow-md py-2"
+            >
+              <AccountDropdownSection>
+                <div className="flex">
+                  <img
+                    src={briefProfile?.avatarUrl}
+                    alt=""
+                    className="w-10 h-10 ml-2 flex-none"
+                  />
+                  <div className="ml-2">
+                    <div className="text-sm">{briefProfile?.fullName}</div>
+                    <div className="text-xs">{briefProfile?.email}</div>
+                  </div>
+                </div>
+              </AccountDropdownSection>
+              <AccountDropdownSection>
+                <AccountDropdownItem to={ROUTES.MY_ACCOUNT}>
+                  Manage account
+                </AccountDropdownItem>
+              </AccountDropdownSection>
+              <AccountDropdownSection includeDivider={false}>
+                <AccountDropdownItem
+                  to={{ pathname: window.location.pathname }}
+                  onClick={handleLogout}
+                >
+                  Log out
+                </AccountDropdownItem>
+              </AccountDropdownSection>
+            </div>
+          )}
+        </div>
+      </div>
+      <Outlet />
+    </div>
+  );
+};
+
+export default AppLayout;
