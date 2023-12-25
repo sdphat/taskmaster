@@ -12,6 +12,7 @@ import { setBoard } from "../../../slices/BoardSlice";
 import { useAppDispatch } from "../../../store";
 import { Board } from "../../../types/Board";
 import NavLink from "./NavLink";
+import ROUTES from "../../../constants/routes";
 
 const BoardPage = () => {
   const { id } = useParams();
@@ -49,7 +50,7 @@ const BoardPage = () => {
             </div>
           </div>
           <div className="px-4 py-3 space-y-4">
-            <NavLink to="/issues">
+            <NavLink to={ROUTES.ISSUES + data?.id}>
               <FileCopyLine />
               Issues
             </NavLink>
