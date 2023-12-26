@@ -33,6 +33,7 @@ const AppLayout = () => {
 
   async function handleLogout() {
     await axiosInstance.post("auth/logout");
+    queryClient.clear();
     navigate(ROUTES.LOGIN);
   }
 
