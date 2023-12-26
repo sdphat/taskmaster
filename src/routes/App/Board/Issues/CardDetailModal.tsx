@@ -318,8 +318,10 @@ export const CardDetailModal = ({
         {/* Card body */}
         <div className={`flex ${CARD_PADDING}`}>
           <div className="flex-1 space-y-6 pr-4">
-            <CardLabels labels={card.Labels} />
-            <CardMembers cardMembers={card.BoardColumnCardMembers} />
+            {card.Labels.length > 0 && <CardLabels labels={card.Labels} />}
+            {card.BoardColumnCardMembers.length > 0 && (
+              <CardMembers cardMembers={card.BoardColumnCardMembers} />
+            )}
             <CardDescription
               description={card.description}
               onSave={handleSaveDescription}
