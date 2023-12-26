@@ -222,6 +222,23 @@ const boardSlice = createSlice({
         (col) => col.id !== columnId
       );
     },
+
+    removeBoardMember(
+      state,
+      { payload: boardMemberId }: PayloadAction<number>
+    ) {
+      state
+        .board!.BoardColumns.flatMap((col) => col.BoardColumnCards)
+        .forEach((card) => {
+          card.BoardColumnCardMembers = card.BoardColumnCardMembers.filter(
+            (member) => member.boardMemberId !== boardMemberId
+          );
+        });
+
+      state.board!.BoardMembers = state.board!.BoardMembers.filter(
+        (member) => member.id !== boardMemberId
+      );
+    },
   },
 });
 
@@ -240,5 +257,6 @@ export const {
   addCardMember,
   removeCardMember,
   removeColumn,
+  removeBoardMember,
 } = boardSlice.actions;
 export const boardSelector = (state: RootState) => state.board;
