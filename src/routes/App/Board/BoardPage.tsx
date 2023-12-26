@@ -33,6 +33,10 @@ const BoardPage = () => {
 
   const [openSidebar, setOpenSidebar] = useState(true);
 
+  if (!data) {
+    return <></>;
+  }
+
   return (
     <div className="flex w-full h-full max-w-[100vw]">
       <div className="flex relative">
@@ -46,15 +50,15 @@ const BoardPage = () => {
           <div className="border-b-2 border-gray-200 px-4 py-3">
             <div className="flex items-start gap-2">
               <FlashlightFill className="flex-none" />{" "}
-              <span className="break-all">{data?.name}</span>
+              <span className="break-all">{data.name}</span>
             </div>
           </div>
           <div className="px-4 py-3 space-y-4">
-            <NavLink to={ROUTES.ISSUES + data?.id}>
+            <NavLink to={ROUTES.ISSUES(data.id)}>
               <FileCopyLine />
               Issues
             </NavLink>
-            <NavLink to="/settings">
+            <NavLink to={ROUTES.BOARD_SETTINGS(data.id)}>
               <Settings4Line />
               Project Settings
             </NavLink>

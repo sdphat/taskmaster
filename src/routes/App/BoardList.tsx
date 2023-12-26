@@ -28,7 +28,7 @@ const BoardList = ({ boards, title, className }: BoardListProps) => {
         {boards.map((board) => (
           <Link
             key={board.id}
-            to={ROUTES.ISSUES + board.id}
+            to={ROUTES.ISSUES(board.id)}
             style={{ background: board.backgroundUrl }}
             className="flex flex-1 py-6 px-4 h-40 rounded-md border-2 border-gray-300 overflow-hidden bg-cover"
           >

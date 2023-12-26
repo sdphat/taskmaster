@@ -11,6 +11,7 @@ import IssuesPage from "./routes/App/Board/Issues/IssuesPage.tsx";
 import { Provider } from "react-redux";
 import { store } from "./store.ts";
 import App from "./routes/App/App.tsx";
+import SettingsPage from "./routes/App/Board/Settings/SettingsPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
             path: "board",
             element: <BoardPage />,
             children: [
+              {
+                path: ":id/settings",
+                element: <SettingsPage />,
+              },
               {
                 path: ":id",
                 element: <IssuesPage />,
