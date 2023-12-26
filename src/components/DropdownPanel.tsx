@@ -18,6 +18,7 @@ export interface DropdownPanelProps {
 }
 
 const DropdownPanelWrapper = tw.div`
+  z-50
   absolute 
   flex 
   flex-col
