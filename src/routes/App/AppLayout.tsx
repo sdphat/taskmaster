@@ -40,6 +40,7 @@ const AppLayout = () => {
   async function handleCreateBoard(args: CreateBoardData) {
     await createBoardMutation.mutateAsync(args);
     await queryClient.invalidateQueries(`all-boards`);
+    setCreateBoardAnchor(undefined);
   }
 
   return (
