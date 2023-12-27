@@ -7,6 +7,9 @@ import Button from "./Button";
 
 const DROPDOWN_MARGIN = 4;
 
+export type HorizontalPosition = "left" | "right" | "center";
+export type VerticalPosition = "top" | "bottom" | "center";
+
 export interface DropdownPanelProps {
   onCloseDropdown: () => void;
   onClickGoBack: () => void;
@@ -15,6 +18,8 @@ export interface DropdownPanelProps {
   children: ReactNode;
   className?: string;
   title: ReactNode;
+  x?: HorizontalPosition;
+  y?: VerticalPosition;
 }
 
 const DropdownPanelWrapper = tw.div`
@@ -31,6 +36,52 @@ const DropdownPanelWrapper = tw.div`
   shadow-lg
 `;
 
+const makeOffsetVerticalStyle = (
+  y: VerticalPosition,
+  anchor: HTMLElement
+): React.CSSProperties => {
+  if (y === "bottom") {
+    return {
+      top: anchor.offsetTop + anchor.offsetHeight + DROPDOWN_MARGIN,
+      transform: "translateY(0)",
+    };
+  }
+  if (y === "top") {
+    return {
+      top: anchor.offsetTop - DROPDOWN_MARGIN,
+      transform: "translateY(-100%)",
+    };
+  }
+
+  return {
+    top: anchor.offsetTop + anchor.offsetHeight / 2,
+    transform: "translateY(-50%)",
+  };
+};
+
+const makeOffsetHorizontalStyle = (
+  x: HorizontalPosition,
+  anchor: HTMLElement
+): React.CSSProperties => {
+  if (x === "left") {
+    return {
+      left: anchor.offsetLeft - DROPDOWN_MARGIN,
+      transform: "translateX(0)",
+    };
+  }
+  if (x === "right") {
+    return {
+      left: anchor.offsetLeft + anchor.offsetWidth,
+      transform: "translateX(-100%)",
+    };
+  }
+
+  return {
+    left: anchor.offsetLeft + anchor.offsetWidth / 2,
+    transform: "translateX(-50%)",
+  };
+};
+
 const DropdownPanel = ({
   anchor,
   onCloseDropdown,
@@ -39,6 +90,8 @@ const DropdownPanel = ({
   onClickGoBack,
   title,
   className,
+  x = "left",
+  y = "bottom",
 }: DropdownPanelProps) => {
   const [dropdownElement, setDropdownElement] = useState<HTMLElement>();
   useClickOutside({
@@ -49,10 +102,17 @@ const DropdownPanel = ({
       }
     },
   });
+
   return (
     <DropdownPanelWrapper
       ref={(el) => setDropdownElement(el as HTMLElement)}
-      style={{ top: anchor.offsetTop + anchor.offsetHeight + DROPDOWN_MARGIN }}
+      style={{
+        ...makeOffsetVerticalStyle(y, anchor),
+        ...makeOffsetHorizontalStyle(x, anchor),
+        transform: `${makeOffsetHorizontalStyle(x, anchor).transform} ${
+          makeOffsetVerticalStyle(y, anchor).transform
+        }`,
+      }}
       className={className}
     >
       <Button

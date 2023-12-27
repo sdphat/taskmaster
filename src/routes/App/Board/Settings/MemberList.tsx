@@ -52,10 +52,12 @@ const MemberListItem = ({
     setDeleteBtnAnchor(undefined);
   };
 
+  const isSameUser = member.User.email === currentUser.email;
+
   return (
     <div
       key={member.id}
-      className="hover:bg-gray-200 px-2 transition-all rounded"
+      className="hover:bg-gray-200 px-2 py-1 transition-all rounded"
     >
       <div className="flex items-center gap-2">
         <div className="flex flex-none w-[36rem] items-center py-2">
@@ -67,29 +69,39 @@ const MemberListItem = ({
           </div>
           <span className="font-medium">{member.User.fullName}</span>
         </div>
-        <div>
-          <Select
-            isSearchable={false}
-            className="w-40"
-            options={ROLE_OPTIONS}
-            defaultValue={ROLE_OPTIONS.find(
-              (opt) => opt.value === member.memberRole
-            )}
-          />
+        <div className="w-40">
+          {isSameUser ? (
+            <span className="px-2">
+              {
+                ROLE_OPTIONS.find((opt) => opt.value === member.memberRole)
+                  ?.label
+              }
+            </span>
+          ) : (
+            <Select
+              isSearchable={false}
+              className="w-full"
+              options={ROLE_OPTIONS}
+              defaultValue={ROLE_OPTIONS.find(
+                (opt) => opt.value === member.memberRole
+              )}
+            />
+          )}
         </div>
         <div className="flex-1"></div>
         <div>
-          {member.memberRole !== "ADMIN" &&
-            member.User.email !== currentUser.email && (
-              <Button
-                onClick={(e) => setDeleteBtnAnchor(e.currentTarget)}
-                $variant="danger"
-              >
-                Remove member
-              </Button>
-            )}
+          {member.memberRole !== "ADMIN" && !isSameUser && (
+            <Button
+              onClick={(e) => setDeleteBtnAnchor(e.currentTarget)}
+              $variant="danger"
+            >
+              Remove member
+            </Button>
+          )}
           {deleteBtnAnchor && (
             <DropdownRemoveAssertion
+              x="right"
+              y="bottom"
               anchor={deleteBtnAnchor}
               onClickDeleteConfirm={() => handleDeleteMember(member)}
               onCloseDropdown={() => setDeleteBtnAnchor(undefined)}

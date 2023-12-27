@@ -1,19 +1,28 @@
 import Button from "./Button";
-import DropdownPanel from "./DropdownPanel";
+import DropdownPanel, {
+  HorizontalPosition,
+  VerticalPosition,
+} from "./DropdownPanel";
 
 export interface DropdownRemoveAssertionProps {
   anchor: HTMLElement;
   onCloseDropdown: () => void;
   onClickDeleteConfirm: () => void;
+  x?: HorizontalPosition;
+  y?: VerticalPosition;
 }
 
 const DropdownRemoveAssertion = ({
   anchor,
   onCloseDropdown,
   onClickDeleteConfirm,
+  x,
+  y,
 }: DropdownRemoveAssertionProps) => {
   return (
     <DropdownPanel
+      x={x}
+      y={y}
       anchor={anchor}
       canGoBack={false}
       onClickGoBack={() => {}}
