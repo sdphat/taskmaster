@@ -8,16 +8,22 @@ import ROUTES from "../../../../constants/routes";
 import useProfile from "../../../../hooks/useProfile";
 import {
   boardSelector,
+  changeBoardMemberRole,
   removeBoardMember,
 } from "../../../../slices/BoardSlice";
 import { RootState, useAppDispatch } from "../../../../store";
 import MemberList from "./MemberList";
 import { useState } from "react";
-import { BoardMember } from "../../../../types/Board";
+import { BoardMember, BoardRole } from "../../../../types/Board";
 
 interface RemoveMemberMutationArgs {
   boardId: number;
   memberUserId: number;
+}
+
+interface ChangeMemberRoleMutationArgs {
+  role: BoardRole;
+  memberId: number;
 }
 
 const SettingsPage = () => {
@@ -31,11 +37,14 @@ const SettingsPage = () => {
 
   const removeMemberMutation = useMutation({
     async mutationFn(args: RemoveMemberMutationArgs) {
-      return (
-        await axiosInstance.delete(`member/board`, {
-          data: args,
-        })
-      ).data;
+      return (await axiosInstance.delete(`member/board`, { data: args })).data;
+    },
+  });
+
+  const changeMemberRoleMutation = useMutation({
+    async mutationFn(args: ChangeMemberRoleMutationArgs) {
+      console.log(args);
+      return await axiosInstance.put(`member/board/role`, args);
     },
   });
 
@@ -62,6 +71,20 @@ const SettingsPage = () => {
     dispatch(removeBoardMember(member.id));
   };
 
+  const handleChangeMemberRole = async (member: BoardMember) => {
+    await changeMemberRoleMutation.mutateAsync({
+      memberId: member.id,
+      role: member.memberRole,
+    });
+
+    dispatch(
+      changeBoardMemberRole({
+        boardMemberId: member.id,
+        memberRole: member.memberRole,
+      })
+    );
+  };
+
   if (!board) {
     return <></>;
   }
@@ -74,6 +97,7 @@ const SettingsPage = () => {
           members={board.BoardMembers}
           currentUser={profile}
           onDeleteMember={handleRemoveMember}
+          onChangeRole={handleChangeMemberRole}
         />
         <div className="h-[1px] bg-gray-300 my-1"></div>
         {userRole === "ADMIN" && (

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Select from "react-select";
+import Select, { SingleValue } from "react-select";
 import Button from "../../../../components/Button";
 import DropdownRemoveAssertion from "../../../../components/DropdownRemoveAssertion";
 import { BoardMember, BoardRole } from "../../../../types/Board";
@@ -9,6 +9,7 @@ export interface MemberListProps {
   members: BoardMember[];
   currentUser: BriefProfile;
   onDeleteMember: (member: BoardMember) => Promise<void> | void;
+  onChangeRole: (member: BoardMember) => Promise<void> | void;
 }
 
 type Option = { value: BoardRole; label: string };
@@ -38,18 +39,26 @@ export interface MemberListItemProps {
   member: BoardMember;
   currentUser: BriefProfile;
   onDeleteMember: (member: BoardMember) => Promise<void> | void;
+  onChangeRole: (member: BoardMember) => Promise<void> | void;
 }
 
 const MemberListItem = ({
   currentUser,
   member,
   onDeleteMember,
+  onChangeRole,
 }: MemberListItemProps) => {
   const [deleteBtnAnchor, setDeleteBtnAnchor] = useState<HTMLElement>();
 
   const handleDeleteMember = async (member: BoardMember) => {
     await onDeleteMember(member);
     setDeleteBtnAnchor(undefined);
+  };
+
+  const handleChangeRole = (option: SingleValue<Option>) => {
+    if (option) {
+      onChangeRole({ ...member, memberRole: option.value });
+    }
   };
 
   const isSameUser = member.User.email === currentUser.email;
@@ -82,6 +91,7 @@ const MemberListItem = ({
               isSearchable={false}
               className="w-full"
               options={ROLE_OPTIONS}
+              onChange={handleChangeRole}
               defaultValue={ROLE_OPTIONS.find(
                 (opt) => opt.value === member.memberRole
               )}
@@ -117,6 +127,7 @@ const MemberList = ({
   currentUser,
   members,
   onDeleteMember,
+  onChangeRole,
 }: MemberListProps) => {
   return (
     <div>
@@ -128,6 +139,7 @@ const MemberList = ({
             member={member}
             currentUser={currentUser}
             onDeleteMember={onDeleteMember}
+            onChangeRole={onChangeRole}
           />
         ))}
       </div>

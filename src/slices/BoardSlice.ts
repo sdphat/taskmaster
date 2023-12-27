@@ -5,6 +5,7 @@ import {
   BoardColumn,
   BoardColumnCard,
   BoardColumnCardMember,
+  BoardRole,
   Label,
 } from "../types/Board";
 
@@ -40,6 +41,11 @@ interface AddCardMemberPayload {
 interface RemoveCardMemberPayload {
   cardId: number;
   memberId: number;
+}
+
+interface ChangeMemberRolePayload {
+  boardMemberId: number;
+  memberRole: BoardRole;
 }
 
 function sortBoardInPlace(board: Board) {
@@ -239,6 +245,28 @@ const boardSlice = createSlice({
         (member) => member.id !== boardMemberId
       );
     },
+    changeBoardMemberRole(
+      state,
+      {
+        payload: { boardMemberId, memberRole },
+      }: PayloadAction<ChangeMemberRolePayload>
+    ) {
+      state.board?.BoardColumns.flatMap((col) => col.BoardColumnCards).forEach(
+        (card) => {
+          card.BoardColumnCardMembers.forEach((cardMember) => {
+            if (cardMember.Member.id === boardMemberId) {
+              cardMember.Member.memberRole = memberRole;
+            }
+          });
+        }
+      );
+
+      state.board!.BoardMembers.forEach((member) => {
+        if (member.id === boardMemberId) {
+          member.memberRole = memberRole;
+        }
+      });
+    },
   },
 });
 
@@ -258,5 +286,6 @@ export const {
   removeCardMember,
   removeColumn,
   removeBoardMember,
+  changeBoardMemberRole,
 } = boardSlice.actions;
 export const boardSelector = (state: RootState) => state.board;
