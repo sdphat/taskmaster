@@ -7,6 +7,7 @@ import DropdownRemoveAssertion from "../../../../components/DropdownRemoveAssert
 import ROUTES from "../../../../constants/routes";
 import useProfile from "../../../../hooks/useProfile";
 import {
+  addBoardMember,
   boardSelector,
   changeBoardMemberRole,
   removeBoardMember,
@@ -26,6 +27,17 @@ interface ChangeMemberRoleMutationArgs {
   memberId: number;
 }
 
+interface AddMemberMutationArgs {
+  boardId: number;
+  memberRole: BoardRole;
+  email: string;
+}
+
+interface HandleAddMemberData {
+  memberRole: BoardRole;
+  email: string;
+}
+
 const SettingsPage = () => {
   const [deleteBtnAnchor, setDeleteBtnAnchor] = useState<HTMLElement>();
   const { board } = useSelector<RootState, ReturnType<typeof boardSelector>>(
@@ -43,8 +55,13 @@ const SettingsPage = () => {
 
   const changeMemberRoleMutation = useMutation({
     async mutationFn(args: ChangeMemberRoleMutationArgs) {
-      console.log(args);
       return await axiosInstance.put(`member/board/role`, args);
+    },
+  });
+
+  const addMemberMutation = useMutation({
+    async mutationFn(args: AddMemberMutationArgs): Promise<BoardMember> {
+      return (await axiosInstance.post(`member/board`, args)).data;
     },
   });
 
@@ -89,6 +106,15 @@ const SettingsPage = () => {
     return <></>;
   }
 
+  async function handleAddMember({ email, memberRole }: HandleAddMemberData) {
+    const newMember = await addMemberMutation.mutateAsync({
+      boardId: board!.id,
+      email,
+      memberRole,
+    });
+    dispatch(addBoardMember(newMember));
+  }
+
   return (
     <div className="py-4 px-8 flex-1">
       <h1>{board.name}'s Settings</h1>
@@ -98,6 +124,7 @@ const SettingsPage = () => {
           currentUser={profile}
           onDeleteMember={handleRemoveMember}
           onChangeRole={handleChangeMemberRole}
+          onAddMember={handleAddMember}
         />
         <div className="h-[1px] bg-gray-300 my-1"></div>
         {userRole === "ADMIN" && (

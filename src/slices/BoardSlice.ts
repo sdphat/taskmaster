@@ -5,6 +5,7 @@ import {
   BoardColumn,
   BoardColumnCard,
   BoardColumnCardMember,
+  BoardMember,
   BoardRole,
   Label,
 } from "../types/Board";
@@ -245,6 +246,7 @@ const boardSlice = createSlice({
         (member) => member.id !== boardMemberId
       );
     },
+
     changeBoardMemberRole(
       state,
       {
@@ -267,6 +269,10 @@ const boardSlice = createSlice({
         }
       });
     },
+
+    addBoardMember(state, { payload }: PayloadAction<BoardMember>) {
+      state.board!.BoardMembers.push(payload);
+    },
   },
 });
 
@@ -287,5 +293,6 @@ export const {
   removeColumn,
   removeBoardMember,
   changeBoardMemberRole,
+  addBoardMember,
 } = boardSlice.actions;
 export const boardSelector = (state: RootState) => state.board;
