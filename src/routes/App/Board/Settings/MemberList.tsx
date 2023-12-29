@@ -92,7 +92,10 @@ const MemberListItem = ({
           </div>
           <div className="min-w-0 overflow-hidden whitespace-nowrap text-ellipsis">
             <div className="font-medium overflow-hidden whitespace-nowrap text-ellipsis pr-12">
-              {member.User.fullName}
+              {member.User.fullName}{" "}
+              {!member.hasJoined && (
+                <span className="font-normal text-sm">(pending)</span>
+              )}
             </div>
             <div className="text-sm font-medium overflow-hidden whitespace-nowrap text-ellipsis">
               {member.User.email}
@@ -100,7 +103,6 @@ const MemberListItem = ({
           </div>
         </div>
 
-        <div className="flex-1"></div>
         <div className="w-40">
           {isAllowedToEdit ? (
             <Select

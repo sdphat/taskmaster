@@ -12,6 +12,7 @@ import { Provider } from "react-redux";
 import { store } from "./store.ts";
 import App from "./routes/App/App.tsx";
 import SettingsPage from "./routes/App/Board/Settings/SettingsPage.tsx";
+import InvitationPage from "./routes/Invitation/InvitationPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <Register />,
+      },
+      {
+        path: "/invitation",
+        element: <InvitationPage />,
       },
       {
         path: "/app",

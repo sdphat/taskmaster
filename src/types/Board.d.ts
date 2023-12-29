@@ -43,6 +43,7 @@ export class BoardMember {
   id: number;
   User: User;
   memberRole: BoardRole;
+  hasJoined: boolean;
 }
 
 export class User {
