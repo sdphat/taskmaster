@@ -14,6 +14,7 @@ axiosInstance.interceptors.response.use(
       });
       return axiosInstance(error.config!);
     }
+    return error.response;
   }
 );
 

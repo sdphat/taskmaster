@@ -13,14 +13,21 @@ import { useAppDispatch } from "../../../store";
 import { Board } from "../../../types/Board";
 import NavLink from "./NavLink";
 import ROUTES from "../../../constants/routes";
+import { HttpStatusCode } from "axios";
 
 const BoardPage = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
+  const [isForbidden, setIsForbidden] = useState(false);
   const { data } = useQuery<Board>(
     ["issues", id],
     async () => {
-      const data = (await axiosInstance.get("/board/" + id)).data;
+      const response = await axiosInstance.get("/board/" + id);
+      if (response.status === HttpStatusCode.Forbidden) {
+        setIsForbidden(true);
+        return;
+      }
+      const data = response.data;
       dispatch(setBoard(data));
       return data;
     },
@@ -32,6 +39,15 @@ const BoardPage = () => {
   );
 
   const [openSidebar, setOpenSidebar] = useState(true);
+
+  if (isForbidden) {
+    return (
+      <div className="w-full h-full max-w-[100vw] bg-gray-100 grid place-items-center text-lg">
+        This board url is either incorrect or you are not allowed to view. If
+        this board url is valid, please contact board admins for access.
+      </div>
+    );
+  }
 
   if (!data) {
     return <></>;

@@ -33,7 +33,7 @@ const NewColumnForm = ({ onAddColumn }: NewColumnFormProps) => {
           />
           <div className="flex mt-3 gap-2">
             <Button $variant="primary" className="flex-grow">
-              Add card
+              Add a list
             </Button>
             <Button
               type="button"
