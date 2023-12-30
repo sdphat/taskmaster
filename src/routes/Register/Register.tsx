@@ -1,8 +1,8 @@
 import { ErrorMessage } from "@hookform/error-message";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError, HttpStatusCode } from "axios";
+import { HttpStatusCode } from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import axiosInstance from "../../api/axios";
 import appIcon from "../../assets/app-icon-with-text.svg";
@@ -12,6 +12,7 @@ import FormInput from "../../components/FormInput";
 import FormInputError from "../../components/FormInputError";
 import FormLabel from "../../components/FormLabel";
 import Link from "../../components/Link";
+import ROUTES from "../../constants/routes";
 
 const isStrongPassword = (password: string) => {
   return (
@@ -78,25 +79,27 @@ const Register = () => {
     reValidateMode: "onChange",
   });
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const onSubmit: SubmitHandler<RegisterInput> = async ({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     confirmPassword,
     ...data
   }) => {
-    try {
-      await axiosInstance.post("/auth/register", data);
-      navigate({ pathname: "/app" }, { replace: true });
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        if (err.response?.status === HttpStatusCode.Conflict) {
-          setError("email", {
-            message:
-              "This email is already in use. Please register with other email.",
-            type: "custom",
-          });
-        }
-      }
+    const response = await axiosInstance.post("/auth/register", data);
+    if (response.status === HttpStatusCode.Conflict) {
+      setError("email", {
+        message:
+          "This email is already in use. Please register with other email.",
+        type: "custom",
+      });
+      return;
+    }
+    const redirectUrl = searchParams.get("redirect");
+    if (redirectUrl) {
+      navigate(redirectUrl, { replace: true });
+    } else {
+      navigate(ROUTES.APP, { replace: true });
     }
   };
 
