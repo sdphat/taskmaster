@@ -10,6 +10,7 @@ import { Board } from "../../types/Board";
 import AccountDropdownItem from "./Board/AccountDropdownItem";
 import AccountDropdownSection from "./Board/AccountDropdownSection";
 import CreateBoardDropdown, { CreateBoardData } from "./CreateBoardDropdown";
+import { AxiosError, HttpStatusCode } from "axios";
 
 interface CreateBoardMutationArgs {
   title: string;
@@ -20,8 +21,15 @@ const AppLayout = () => {
   const navBarRef = useRef<HTMLDivElement>(null);
   const [openAccountDropdown, setOpenAccountDropdown] = useState(false);
   const [createBoardAnchor, setCreateBoardAnchor] = useState<HTMLElement>();
-  const { data: briefProfile } = useProfile();
+  const { data: briefProfile, error: profileError } = useProfile();
   const navigate = useNavigate();
+
+  if (
+    profileError instanceof AxiosError &&
+    profileError.response?.status === HttpStatusCode.Unauthorized
+  ) {
+    navigate({ pathname: ROUTES.LOGIN }, { replace: true });
+  }
 
   const navBarHeight = navBarRef.current?.clientHeight ?? 0;
 

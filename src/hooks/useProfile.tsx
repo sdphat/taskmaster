@@ -1,8 +1,5 @@
-import { AxiosError, HttpStatusCode } from "axios";
 import { useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axios";
-import ROUTES from "../constants/routes";
 import { BriefProfile } from "../types/BriefProfile";
 
 async function getBriefProfile(): Promise<BriefProfile> {
@@ -16,6 +13,7 @@ const useProfile = (
     refetchOnMount: false,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
+    retry: 0,
   } as UseProfileOption
 ) => {
   const { data, ...useQueryResult } = useQuery<BriefProfile>(
@@ -23,14 +21,6 @@ const useProfile = (
     getBriefProfile,
     option
   );
-  const navigate = useNavigate();
-
-  if (
-    useQueryResult.error instanceof AxiosError &&
-    useQueryResult.error.response?.status === HttpStatusCode.Unauthorized
-  ) {
-    navigate({ pathname: ROUTES.LOGIN }, { replace: true });
-  }
 
   return { data: data!, ...useQueryResult };
 };
