@@ -4,6 +4,7 @@ import { useMutation } from "react-query";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../../../api/axios";
 import useProfile from "../../../../hooks/useProfile";
+import { useUpdateCardMutation } from "../../../../hooks/useUpdateCardMutation";
 import {
   boardSelector,
   createCard,
@@ -14,15 +15,14 @@ import {
 } from "../../../../slices/BoardSlice";
 import { RootState, useAppDispatch } from "../../../../store";
 import {
-  BoardColumn as BoardColumnType,
   BoardColumnCard,
+  BoardColumn as BoardColumnType,
   Comment,
-  Label,
 } from "../../../../types/Board";
+import NewColumnForm from "../NewColumnForm";
 import BoardColumn, { BoardColumnProps } from "./BoardColumn";
 import CardDetailModal, { CardDetailModalProps } from "./CardDetailModal";
 import Header from "./Header";
-import NewColumnForm from "../NewColumnForm";
 interface MoveCardArgs {
   fromColumn: number;
   fromIdx: number;
@@ -36,18 +36,6 @@ export interface CreateCardArgs {
 }
 
 export interface CreateCardMutationReturn extends BoardColumnCard {
-  boardColumnId: number;
-}
-
-export interface UpdateCardArgs {
-  cardId: number;
-  description?: string;
-  summary?: string;
-  dueDate?: Date;
-  labels?: Pick<Label, "color" | "name">[];
-}
-
-export interface UpdateCardMutationReturn extends BoardColumnCard {
   boardColumnId: number;
 }
 
@@ -84,14 +72,7 @@ const IssuesPage = () => {
       return (await axiosInstance.post("/board-card", args)).data;
     },
   });
-
-  const updateCardMutation = useMutation({
-    mutationFn: async (
-      args: UpdateCardArgs
-    ): Promise<UpdateCardMutationReturn> => {
-      return (await axiosInstance.put("/board-card", args)).data;
-    },
-  });
+  const updateCardMutation = useUpdateCardMutation();
 
   const createCommentMutation = useMutation({
     mutationFn: async (

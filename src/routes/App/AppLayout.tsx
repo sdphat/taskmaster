@@ -1,3 +1,4 @@
+import { AxiosError, HttpStatusCode } from "axios";
 import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -10,7 +11,6 @@ import { Board } from "../../types/Board";
 import AccountDropdownItem from "./Board/AccountDropdownItem";
 import AccountDropdownSection from "./Board/AccountDropdownSection";
 import CreateBoardDropdown, { CreateBoardData } from "./CreateBoardDropdown";
-import { AxiosError, HttpStatusCode } from "axios";
 
 interface CreateBoardMutationArgs {
   title: string;

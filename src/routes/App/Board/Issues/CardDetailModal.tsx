@@ -21,6 +21,7 @@ import FormInput from "../../../../components/FormInput";
 import ModalContainer from "../../../../components/ModalContainer";
 import useRefresh from "../../../../hooks/useRefresh";
 import {
+  Attachment,
   Board,
   BoardColumn,
   BoardColumnCard,
@@ -42,12 +43,17 @@ import {
   removeCard,
   removeCardMember,
   removeLabel,
+  updateCard,
   updateLabel,
   updateLabelList,
 } from "../../../../slices/BoardSlice";
 import BoardMembersDropdown from "./BoardMembersDropdown";
 import CardMembers from "./CardMembers";
 import DropdownRemoveAssertion from "../../../../components/DropdownRemoveAssertion";
+import CardAttachmentDropdown from "./CardAttachmentDropdown";
+import { useUpdateCardMutation } from "../../../../hooks/useUpdateCardMutation";
+import CardAttachments from "./CardAttachments";
+import { toast } from "react-toastify";
 export interface CardDetailModalProps {
   board: Board;
   card: BoardColumnCard;
@@ -139,7 +145,9 @@ export const CardDetailModal = ({
   const labelDropdownAnchorRef = useRef<HTMLElement>();
   const membersDropdownAnchorRef = useRef<HTMLElement>();
   const removeConfirmDropdownAnchorRef = useRef<HTMLElement>();
+  const attachmentDropdownAnchorRef = useRef<HTMLElement>();
   const dispatch = useAppDispatch();
+  const updateCardMutation = useUpdateCardMutation();
 
   const createLabelMutation = useMutation({
     async mutationFn(args: CreateLabelArgs): Promise<Label> {
@@ -240,7 +248,7 @@ export const CardDetailModal = ({
     dispatch(updateLabel(label));
   }
 
-  function handleLabelBtnCLick(event: MouseEvent<HTMLButtonElement>): void {
+  function handleLabelBtnClick(event: MouseEvent<HTMLButtonElement>): void {
     labelDropdownAnchorRef.current !== event.currentTarget
       ? (labelDropdownAnchorRef.current = event.currentTarget)
       : (labelDropdownAnchorRef.current = undefined);
@@ -257,7 +265,7 @@ export const CardDetailModal = ({
     refresh();
   }
 
-  function handleMembersBtnCLick(event: MouseEvent<HTMLButtonElement>): void {
+  function handleMembersBtnClick(event: MouseEvent<HTMLButtonElement>): void {
     membersDropdownAnchorRef.current !== event.currentTarget
       ? (membersDropdownAnchorRef.current = event.currentTarget)
       : (membersDropdownAnchorRef.current = undefined);
@@ -291,6 +299,39 @@ export const CardDetailModal = ({
   async function handleClickRemove(e: MouseEvent<HTMLElement>): Promise<void> {
     removeConfirmDropdownAnchorRef.current = e.currentTarget;
     refresh();
+  }
+
+  function handleAttachmentBtnClick(
+    event: MouseEvent<HTMLButtonElement>
+  ): void {
+    attachmentDropdownAnchorRef.current = event.currentTarget;
+    refresh();
+  }
+
+  async function handleAttachmentChange(file: File) {
+    const response = await axiosInstance.post<Attachment>(
+      "/attachment",
+      {
+        file,
+      },
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    const url = response.data.url;
+    const updatedCard = await updateCardMutation.mutateAsync({
+      cardId: card.id,
+      attachments: card.Attachments.map((a) => a.url).concat(url),
+    });
+
+    dispatch(updateCard(updatedCard));
+  }
+
+  async function handleAttachmentChangeWithToast(file: File) {
+    toast.promise(handleAttachmentChange(file), {
+      pending: `Uploading ${file.name}`,
+      error: `Failed to upload ${file.name}`,
+      success: `Upload ${file.name} successfully`,
+    });
   }
 
   return (
@@ -327,6 +368,7 @@ export const CardDetailModal = ({
               onSave={handleSaveDescription}
               key={card.description}
             />
+            <CardAttachments attachments={card.Attachments} />
             <CardActivities
               comments={card.Comments}
               onSave={handleSaveComment}
@@ -343,13 +385,13 @@ export const CardDetailModal = ({
                   Watch
                 </ActionButton>
                 <ActionButton
-                  onClick={handleMembersBtnCLick}
+                  onClick={handleMembersBtnClick}
                   icon={<MemberIcon size={actionIconSize} />}
                 >
                   Members
                 </ActionButton>
                 <ActionButton
-                  onClick={handleLabelBtnCLick}
+                  onClick={handleLabelBtnClick}
                   icon={<LabelIcon size={actionIconSize} />}
                 >
                   Labels
@@ -360,7 +402,10 @@ export const CardDetailModal = ({
                 <ActionButton icon={<DatesIcon size={actionIconSize} />}>
                   Dates
                 </ActionButton>
-                <ActionButton icon={<AttachmentIcon size={actionIconSize} />}>
+                <ActionButton
+                  onClick={handleAttachmentBtnClick}
+                  icon={<AttachmentIcon size={actionIconSize} />}
+                >
                   Attachments
                 </ActionButton>
                 <ActionButton icon={<CoverIcon size={actionIconSize} />}>
@@ -415,6 +460,17 @@ export const CardDetailModal = ({
                     removeConfirmDropdownAnchorRef.current = undefined;
                     refresh();
                   }}
+                />
+              )}
+
+              {attachmentDropdownAnchorRef.current !== undefined && (
+                <CardAttachmentDropdown
+                  anchor={attachmentDropdownAnchorRef.current}
+                  onCloseDropdown={() => {
+                    attachmentDropdownAnchorRef.current = undefined;
+                    refresh();
+                  }}
+                  onFileChange={handleAttachmentChangeWithToast}
                 />
               )}
             </div>
