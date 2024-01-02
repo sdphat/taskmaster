@@ -40,6 +40,7 @@ import { useAppDispatch } from "../../../../store";
 import {
   addCardMember,
   createLabel,
+  removeAttachment,
   removeCard,
   removeCardMember,
   removeLabel,
@@ -195,6 +196,13 @@ export const CardDetailModal = ({
     },
   });
 
+  const removeAttachmentMutation = useMutation({
+    async mutationFn(url: string) {
+      return (await axiosInstance.delete(`/attachment/`, { data: { url } }))
+        .data;
+    },
+  });
+
   function handleSaveComment(comment: string): void {
     onSaveComment(comment);
   }
@@ -334,6 +342,11 @@ export const CardDetailModal = ({
     });
   }
 
+  async function handleDeleteAttachment(attachment: Attachment) {
+    await removeAttachmentMutation.mutateAsync(attachment.url);
+    dispatch(removeAttachment(attachment));
+  }
+
   return (
     <ModalContainer onClose={onClose}>
       <div className="bg-white rounded-lg max-w-5xl w-full pt-4 pb-8 h-max">
@@ -368,7 +381,10 @@ export const CardDetailModal = ({
               onSave={handleSaveDescription}
               key={card.description}
             />
-            <CardAttachments attachments={card.Attachments} />
+            <CardAttachments
+              attachments={card.Attachments}
+              onDelete={handleDeleteAttachment}
+            />
             <CardActivities
               comments={card.Comments}
               onSave={handleSaveComment}

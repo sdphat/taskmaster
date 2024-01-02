@@ -3,9 +3,13 @@ import ArrowRightUpIcon from "remixicon-react/ArrowRightUpLineIcon";
 
 export interface CardAttachmentItemProps {
   attachment: Attachment;
+  onDelete: (attachment: Attachment) => Promise<void> | void;
 }
 
-const CardAttachmentItem = ({ attachment }: CardAttachmentItemProps) => {
+const CardAttachmentItem = ({
+  attachment,
+  onDelete,
+}: CardAttachmentItemProps) => {
   const isImage = attachment.type === "image";
 
   return (
@@ -26,7 +30,12 @@ const CardAttachmentItem = ({ attachment }: CardAttachmentItemProps) => {
             <ArrowRightUpIcon className="inline" size={16} />
           </a>
         </h3>
-        <button className="underline cursor-pointer">Delete</button>
+        <button
+          className="underline cursor-pointer"
+          onClick={() => onDelete(attachment)}
+        >
+          Delete
+        </button>
       </div>
     </div>
   );

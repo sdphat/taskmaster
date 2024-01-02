@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import {
+  Attachment,
   Board,
   BoardColumn,
   BoardColumnCard,
@@ -273,6 +274,16 @@ const boardSlice = createSlice({
     addBoardMember(state, { payload }: PayloadAction<BoardMember>) {
       state.board!.BoardMembers.push(payload);
     },
+
+    removeAttachment(state, { payload }: PayloadAction<Attachment>) {
+      state.board?.BoardColumns.flatMap((col) => col.BoardColumnCards).forEach(
+        (card) => {
+          card.Attachments = card.Attachments.filter(
+            (att) => att.id !== payload.id
+          );
+        }
+      );
+    },
   },
 });
 
@@ -294,5 +305,6 @@ export const {
   removeBoardMember,
   changeBoardMemberRole,
   addBoardMember,
+  removeAttachment,
 } = boardSlice.actions;
 export const boardSelector = (state: RootState) => state.board;

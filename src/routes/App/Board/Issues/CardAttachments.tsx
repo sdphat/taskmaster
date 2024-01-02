@@ -7,9 +7,10 @@ import Button from "../../../../components/Button";
 
 export interface CardAttachmentsProps {
   attachments: Attachment[];
+  onDelete: (attachment: Attachment) => Promise<void> | void;
 }
 
-const CardAttachments = ({ attachments }: CardAttachmentsProps) => {
+const CardAttachments = ({ attachments, onDelete }: CardAttachmentsProps) => {
   const [showMore, setShowMore] = useState(false);
 
   if (!attachments.length) {
@@ -28,7 +29,11 @@ const CardAttachments = ({ attachments }: CardAttachmentsProps) => {
       <Line>
         <div className="mt-1 space-y-3 flex-1">
           {displayAttachments.map((attachment) => (
-            <CardAttachmentItem key={attachment.id} attachment={attachment} />
+            <CardAttachmentItem
+              key={attachment.id}
+              attachment={attachment}
+              onDelete={onDelete}
+            />
           ))}
         </div>
       </Line>
