@@ -15,9 +15,13 @@ const Header = ({ board }: HeaderProps) => {
       <div className="flex">
         <div className="flex gap-1">
           {board.BoardMembers.map((member) => (
-            <span key={member.id} className="rounded-full overflow-hidden">
-              <img src={member.User.avatarUrl} className="w-8 h-8" alt="" />
-            </span>
+            <div key={member.id} className="w-8 h-8 rounded-full relative">
+              <img
+                src={member.User.avatarUrl}
+                className="w-full h-full object-cover object-center"
+                alt=""
+              />
+            </div>
           ))}
         </div>
         <Button className="ml-2" $shape="square" $variant="ghost">

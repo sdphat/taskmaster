@@ -82,7 +82,7 @@ const AppLayout = () => {
             <img
               src={briefProfile?.avatarUrl}
               alt=""
-              className="object-cover"
+              className="object-cover w-full h-full"
             />
           </button>
           {openAccountDropdown && (
