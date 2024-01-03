@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 import App from "./routes/App/App.tsx";
+import Root from "./Root.tsx";
 import AppLayout from "./routes/App/AppLayout.tsx";
 import BoardPage from "./routes/App/Board/BoardPage.tsx";
 import IssuesPage from "./routes/App/Board/Issues/IssuesPage.tsx";
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
   {
     path: "",
     children: [
+      {
+        index: true,
+        element: <Root />,
+      },
       {
         path: "/login",
         element: <Login />,
