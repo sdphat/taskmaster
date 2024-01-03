@@ -15,8 +15,13 @@ const App = () => {
 
   return (
     <div className="py-4">
-      <BoardList boards={undefined} title="Recent Boards" className="mt-0" />
-      <BoardList boards={allBoards} title="All Boards" />
+      {allBoards ? (
+        <BoardList boards={allBoards} title="All Boards" />
+      ) : (
+        <div className="px-4 grid place-items-center bg-gray-300 h-60 font-medium text-lg">
+          There isn't any board yet. Create a new board to start your journey.
+        </div>
+      )}
     </div>
   );
 };
