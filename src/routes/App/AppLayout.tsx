@@ -82,7 +82,7 @@ const AppLayout = () => {
             <img
               src={briefProfile?.avatarUrl}
               alt=""
-              className="object-cover w-full h-full"
+              className="rounded-full w-full h-full object-cover object-center"
             />
           </button>
           {openAccountDropdown && (
@@ -97,7 +97,7 @@ const AppLayout = () => {
                   <img
                     src={briefProfile?.avatarUrl}
                     alt=""
-                    className="w-10 h-10 ml-2 flex-none"
+                    className="w-10 h-10 rounded-full object-cover object-center ml-2 flex-none"
                   />
                   <div className="ml-2">
                     <div className="text-sm">{briefProfile?.fullName}</div>

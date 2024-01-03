@@ -11,7 +11,6 @@ import Markdown from "react-markdown";
 import useCKEditor from "../../../../hooks/useCKEditor";
 import { formatDistance } from "date-fns";
 
-
 export interface CardActivitiesProps {
   profile: BriefProfile;
   comments: BoardColumnCard["Comments"];
@@ -49,7 +48,12 @@ const CardActivities = ({ profile, comments, onSave }: CardActivitiesProps) => {
         <div>
           <Line
             className="items-start"
-            leftContent={<img src={profile.avatarUrl} className="w-8 h-8" />}
+            leftContent={
+              <img
+                src={profile.avatarUrl}
+                className="w-8 h-8 rounded-full object-cover object-center"
+              />
+            }
           >
             {openCommentEditor ? (
               <div>
@@ -87,14 +91,23 @@ const CardActivities = ({ profile, comments, onSave }: CardActivitiesProps) => {
           <Line
             className="items-start"
             leftContent={
-              <img src={comment.Creator.User.avatarUrl} className="w-8 h-8" />
+              <img
+                src={comment.Creator.User.avatarUrl}
+                className="w-8 h-8 rounded-full object-cover object-center"
+              />
             }
             key={comment.id}
           >
             <div className="flex-1">
               <div>
-                <span className="font-bold">{comment.Creator.User.fullName}</span>
-                <span className="text-xs ml-2">{formatDistance(new Date(comment.createdDate), new Date(), { addSuffix: true })}</span>
+                <span className="font-bold">
+                  {comment.Creator.User.fullName}
+                </span>
+                <span className="text-xs ml-2">
+                  {formatDistance(new Date(comment.createdDate), new Date(), {
+                    addSuffix: true,
+                  })}
+                </span>
               </div>
               <div className="border border-gray-300 rounded bg-white w-full p-2 shadow-md">
                 <Markdown>{comment.content}</Markdown>

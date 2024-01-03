@@ -84,12 +84,10 @@ const MemberListItem = ({
     >
       <div className="flex items-center gap-2">
         <div className="flex flex-none w-[36rem] items-center py-2">
-          <div className="rounded-full w-9 h-9 flex-none mr-3">
-            <img
-              src={member.User.avatarUrl}
-              className="flex-none object-center object-fill rounded-full"
-            />
-          </div>
+          <img
+            src={member.User.avatarUrl}
+            className="mr-3 rounded-full w-9 h-9 flex-none object-center object-cover"
+          />
           <div className="min-w-0 overflow-hidden whitespace-nowrap text-ellipsis">
             <div className="font-medium overflow-hidden whitespace-nowrap text-ellipsis pr-12">
               {member.User.fullName}{" "}
