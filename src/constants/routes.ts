@@ -4,7 +4,7 @@ const ROUTES = {
   APP: APP_ROUTE,
   LOGIN: "/login",
   REGISTER: "/register",
-  MY_ACCOUNT: APP_ROUTE + "/my-account",
+  MY_ACCOUNT: APP_ROUTE + "/account",
   LOGOUT: APP_ROUTE + "/logout",
   ISSUES: (boardId: number) => APP_ROUTE + "/board/" + boardId,
   BOARD_SETTINGS: (boardId: number) =>

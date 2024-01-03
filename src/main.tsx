@@ -14,6 +14,7 @@ import InvitationPage from "./routes/Invitation/InvitationPage.tsx";
 import Login from "./routes/Login/Login.tsx";
 import Register from "./routes/Register/Register.tsx";
 import { store } from "./store.ts";
+import AccountPage from "./routes/Account/AccountPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <App />,
+          },
+          {
+            path: "account",
+            element: <AccountPage />,
           },
           {
             path: "board",

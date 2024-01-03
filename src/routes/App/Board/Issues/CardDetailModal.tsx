@@ -55,6 +55,7 @@ import CardAttachmentDropdown from "./CardAttachmentDropdown";
 import { useUpdateCardMutation } from "../../../../hooks/useUpdateCardMutation";
 import CardAttachments from "./CardAttachments";
 import { toast } from "react-toastify";
+import useSendAttachmentMutation from "../../../../hooks/useSendAttachmentMutation";
 export interface CardDetailModalProps {
   board: Board;
   card: BoardColumnCard;
@@ -149,6 +150,7 @@ export const CardDetailModal = ({
   const attachmentDropdownAnchorRef = useRef<HTMLElement>();
   const dispatch = useAppDispatch();
   const updateCardMutation = useUpdateCardMutation();
+  const sendAttachmentMutation = useSendAttachmentMutation();
 
   const createLabelMutation = useMutation({
     async mutationFn(args: CreateLabelArgs): Promise<Label> {
@@ -317,15 +319,7 @@ export const CardDetailModal = ({
   }
 
   async function handleAttachmentChange(file: File) {
-    const response = await axiosInstance.post<Attachment>(
-      "/attachment",
-      {
-        file,
-      },
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
-
-    const url = response.data.url;
+    const { url } = await sendAttachmentMutation.mutateAsync({ file });
     const updatedCard = await updateCardMutation.mutateAsync({
       cardId: card.id,
       attachments: card.Attachments.map((a) => a.url).concat(url),

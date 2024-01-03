@@ -30,6 +30,7 @@ const buttonShapeClassNames: Record<ButtonShape, string> = {
 const Button = tw.button<ButtonProps>`    
     rounded-md
     transition-all
+    disabled:bg-gray-400 disabled:text-white
     ${(p) => buttonVariantClassNames[p.$variant ?? "primary"]}
     ${(p) => buttonShapeClassNames[p.$shape ?? "rect"]}
 `;
