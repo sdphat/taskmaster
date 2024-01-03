@@ -1,7 +1,7 @@
 import { AxiosError, HttpStatusCode } from "axios";
 import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axios";
 import appIconWithText from "../../assets/app-icon-with-text.svg";
 import Button from "../../components/Button";
@@ -58,10 +58,12 @@ const AppLayout = () => {
         ref={navBarRef}
         className="flex items-center w-full gap-x-4 px-4 py-4 border-2 border-gray-200"
       >
-        <img className="ml-2" src={appIconWithText} alt="" />
+        <Link className="ml-2" to={ROUTES.APP}>
+          <img src={appIconWithText} alt="" />
+        </Link>
         <div className="ml-4 space-x-4">
-          <button>Your work</button>
-          <button>Projects</button>
+          <Link to={ROUTES.APP}>Your work</Link>
+          <Link to={ROUTES.APP}>Projects</Link>
           <Button onClick={(e) => setCreateBoardAnchor(e.currentTarget)}>
             Create
           </Button>
