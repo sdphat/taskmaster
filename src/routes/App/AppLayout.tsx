@@ -49,6 +49,7 @@ const AppLayout = () => {
     await createBoardMutation.mutateAsync(args);
     await queryClient.invalidateQueries(`all-boards`);
     setCreateBoardAnchor(undefined);
+    navigate(ROUTES.APP);
   }
 
   return (
