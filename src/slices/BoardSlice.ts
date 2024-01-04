@@ -284,11 +284,16 @@ const boardSlice = createSlice({
         }
       );
     },
+
+    updateBoard(state, { payload }: PayloadAction<Board>) {
+      state.board = payload;
+    },
   },
 });
 
 export const boardReducer = boardSlice.reducer;
 export const {
+  updateBoard,
   updateLabel,
   updateLabelList,
   createColumn,

@@ -207,6 +207,10 @@ const IssuesPage = () => {
 
   return (
     <div className="flex flex-col self-stretch flex-1 min-w-0">
+      <div
+        style={{ backgroundImage: `url(${board.backgroundUrl})` }}
+        className="fixed -z-50 inset-0 bg-no-repeat bg-cover"
+      ></div>
       <Header board={board} />
       <DragDropContext onDragEnd={onCardDragEnd}>
         <div className="flex-1 overflow-auto p-4 flex gap-4 items-start">

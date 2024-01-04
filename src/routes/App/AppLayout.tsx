@@ -56,7 +56,7 @@ const AppLayout = () => {
     <div className="h-screen flex flex-col">
       <div
         ref={navBarRef}
-        className="flex items-center w-full gap-x-4 px-4 py-4 border-2 border-gray-200"
+        className="flex bg-white opacity-90 items-center w-full gap-x-4 px-4 py-4 border-2 border-gray-200"
       >
         <Link className="ml-2" to={ROUTES.APP}>
           <img src={appIconWithText} alt="" />

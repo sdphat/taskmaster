@@ -1,14 +1,18 @@
+import { useState } from "react";
 import More2FillIcon from "remixicon-react/More2FillIcon";
 import Button from "../../../../components/Button";
 import { Board } from "../../../../types/Board";
+import BoardOptionDropdown from "./BoardOptionDropdown";
 
 export interface HeaderProps {
   board: Board;
 }
 
 const Header = ({ board }: HeaderProps) => {
+  const [optionBtn, setOptionBtn] = useState<HTMLElement>();
+
   return (
-    <div className="w-full h-12 py-4 px-4 shadow-md bg-opacity-70 flex items-center justify-between">
+    <div className="w-full h-12 py-4 px-4 shadow-md bg-white bg-opacity-90 flex items-center justify-between">
       <div>
         <h3 className="ml-2">{board.name}</h3>
       </div>
@@ -23,9 +27,20 @@ const Header = ({ board }: HeaderProps) => {
             />
           ))}
         </div>
-        <Button className="ml-2" $shape="square" $variant="ghost">
+        <Button
+          onClick={(e) => setOptionBtn(e.currentTarget)}
+          className="ml-2"
+          $shape="square"
+          $variant="ghost"
+        >
           <More2FillIcon size={18} />
         </Button>
+        {optionBtn && (
+          <BoardOptionDropdown
+            anchor={optionBtn}
+            onCloseDropdown={() => setOptionBtn(undefined)}
+          />
+        )}
       </div>
     </div>
   );
