@@ -1,13 +1,12 @@
+import { HttpStatusCode } from "axios";
+import { useState } from "react";
+import { useQuery } from "react-query";
+import { Outlet, useParams } from "react-router-dom";
 import ArrowLeftLine from "remixicon-react/ArrowLeftLineIcon";
 import ArrowRightLine from "remixicon-react/ArrowRightLineIcon";
 import FileCopyLine from "remixicon-react/FileCopyLineIcon";
 import FlashlightFill from "remixicon-react/FlashlightFillIcon";
 import Settings4Line from "remixicon-react/Settings4LineIcon";
-
-import { HttpStatusCode } from "axios";
-import { useState } from "react";
-import { useQuery } from "react-query";
-import { Outlet, useParams } from "react-router-dom";
 import axiosInstance from "../../../api/axios";
 import ROUTES from "../../../constants/routes";
 import { setBoard } from "../../../slices/BoardSlice";

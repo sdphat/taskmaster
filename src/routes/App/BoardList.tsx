@@ -29,12 +29,14 @@ const BoardList = ({ boards, title, className }: BoardListProps) => {
           <Link
             key={board.id}
             to={ROUTES.ISSUES(board.id)}
-            style={{ background: board.backgroundUrl }}
-            className="flex flex-1 py-6 px-4 h-40 rounded-md border-2 border-gray-300 overflow-hidden bg-cover"
+            style={{ backgroundImage: `url(${board.background?.url})` }}
+            className="flex-1 h-40 rounded-md border-2 border-gray-300 overflow-hidden bg-cover hover:shadow-lg transition-all"
           >
-            <h2 className="overflow-hidden overflow-ellipsis whitespace-nowrap">
-              {board.name}
-            </h2>
+            <div className="h-full py-6 px-4 rounded-md bg-gradient-to-r from-slate-100">
+              <h2 className="overflow-hidden overflow-ellipsis whitespace-nowrap">
+                {board.name}
+              </h2>
+            </div>
           </Link>
         ))}
       </div>
