@@ -9,16 +9,18 @@ import FlashlightFill from "remixicon-react/FlashlightFillIcon";
 import Settings4Line from "remixicon-react/Settings4LineIcon";
 import axiosInstance from "../../../api/axios";
 import ROUTES from "../../../constants/routes";
+import { useBoard } from "../../../hooks/useBoard";
 import { setBoard } from "../../../slices/BoardSlice";
 import { useAppDispatch } from "../../../store";
 import { Board } from "../../../types/Board";
 import NavLink from "./NavLink";
 
 const BoardPage = () => {
+  const { board } = useBoard();
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const [isForbidden, setIsForbidden] = useState(false);
-  const { data: board } = useQuery<Board>(
+  useQuery<Board>(
     ["issues", id],
     async () => {
       const response = await axiosInstance.get("/board/" + id);

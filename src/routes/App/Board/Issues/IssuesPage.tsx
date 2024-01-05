@@ -1,19 +1,18 @@
 import { useState } from "react";
 import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd";
 import { useMutation } from "react-query";
-import { useSelector } from "react-redux";
 import axiosInstance from "../../../../api/axios";
+import { useBoard } from "../../../../hooks/useBoard";
 import useProfile from "../../../../hooks/useProfile";
 import { useUpdateCardMutation } from "../../../../hooks/useUpdateCardMutation";
 import {
-  boardSelector,
   createCard,
   createColumn,
   moveCardTo,
   removeColumn,
   updateCard,
 } from "../../../../slices/BoardSlice";
-import { RootState, useAppDispatch } from "../../../../store";
+import { useAppDispatch } from "../../../../store";
 import {
   BoardColumnCard,
   BoardColumn as BoardColumnType,
@@ -54,9 +53,7 @@ export interface CreateColumnArgs {
 
 const IssuesPage = () => {
   const { data: briefProfile } = useProfile();
-  const { board } = useSelector<RootState, ReturnType<typeof boardSelector>>(
-    boardSelector
-  );
+  const { board } = useBoard();
   const dispatch = useAppDispatch();
 
   const moveCardMutation = useMutation({

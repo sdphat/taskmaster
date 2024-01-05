@@ -1,16 +1,15 @@
-import { useSelector } from "react-redux";
-import DropdownPanel from "../../../../components/DropdownPanel";
-import usePanelStack from "../../../../hooks/usePanelStack";
-import { boardSelector, updateBoard } from "../../../../slices/BoardSlice";
-import { RootState, useAppDispatch } from "../../../../store";
-import useSendAttachmentMutation from "../../../../hooks/useSendAttachmentMutation";
-import { useMutation } from "react-query";
-import axiosInstance from "../../../../api/axios";
-import Button from "../../../../components/Button";
-import CameraIcon from "remixicon-react/CameraLineIcon";
 import { ChangeEvent, useRef, useState } from "react";
+import CameraIcon from "remixicon-react/CameraLineIcon";
+import Button from "../../../../components/Button";
+import DropdownPanel from "../../../../components/DropdownPanel";
 import FormInputError from "../../../../components/FormInputError";
+import { useBoard } from "../../../../hooks/useBoard";
+import usePanelStack from "../../../../hooks/usePanelStack";
 import useRemoveAttachmentMutation from "../../../../hooks/useRemoveAttachmentMutation";
+import useSendAttachmentMutation from "../../../../hooks/useSendAttachmentMutation";
+import { useUpdateBoardMutation } from "../../../../hooks/useUpdateBoardMutation";
+import { updateBoard } from "../../../../slices/BoardSlice";
+import { useAppDispatch } from "../../../../store";
 
 export interface BoardOptionDropdownProps {
   anchor: HTMLElement;
@@ -125,21 +124,9 @@ const BoardOptionDropdown = ({
   anchor,
   onCloseDropdown,
 }: BoardOptionDropdownProps) => {
-  const { board } = useSelector<RootState, ReturnType<typeof boardSelector>>(
-    boardSelector
-  );
+  const { board } = useBoard();
   const dispatch = useAppDispatch();
-  const updateBoardBgMutation = useMutation({
-    mutationFn: async ({
-      id,
-      backgroundUrl,
-    }: {
-      id: number;
-      backgroundUrl: string | undefined;
-    }) => {
-      return (await axiosInstance.put(`/board/${id}`, { backgroundUrl })).data;
-    },
-  });
+  const updateBoardBgMutation = useUpdateBoardMutation();
   const sendAttachmentMutation = useSendAttachmentMutation();
   const removeAttachmentMutation = useRemoveAttachmentMutation();
   const { panelStack, currentPanel, goBack, pushPanel } =

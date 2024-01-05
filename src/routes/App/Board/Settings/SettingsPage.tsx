@@ -1,21 +1,24 @@
+import { useState } from "react";
 import { useMutation } from "react-query";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import EditBoxLineIcon from "remixicon-react/EditBoxLineIcon";
 import axiosInstance from "../../../../api/axios";
 import Button from "../../../../components/Button";
 import DropdownRemoveAssertion from "../../../../components/DropdownRemoveAssertion";
+import FormInput from "../../../../components/FormInput";
 import ROUTES from "../../../../constants/routes";
+import { useBoard } from "../../../../hooks/useBoard";
 import useProfile from "../../../../hooks/useProfile";
+import { useUpdateBoardMutation } from "../../../../hooks/useUpdateBoardMutation";
 import {
   addBoardMember,
-  boardSelector,
   changeBoardMemberRole,
   removeBoardMember,
+  updateBoard,
 } from "../../../../slices/BoardSlice";
-import { RootState, useAppDispatch } from "../../../../store";
-import MemberList from "./MemberList";
-import { useState } from "react";
+import { useAppDispatch } from "../../../../store";
 import { BoardMember, BoardRole } from "../../../../types/Board";
+import MemberList from "./MemberList";
 
 interface RemoveMemberMutationArgs {
   boardId: number;
@@ -40,12 +43,13 @@ interface HandleAddMemberData {
 
 const SettingsPage = () => {
   const [deleteBtnAnchor, setDeleteBtnAnchor] = useState<HTMLElement>();
-  const { board } = useSelector<RootState, ReturnType<typeof boardSelector>>(
-    boardSelector
-  );
+  const [isEditingName, setEditingName] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const { board } = useBoard();
   const { data: profile } = useProfile();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const updateBoardMutation = useUpdateBoardMutation();
 
   const removeMemberMutation = useMutation({
     async mutationFn(args: RemoveMemberMutationArgs) {
@@ -64,10 +68,6 @@ const SettingsPage = () => {
       return (await axiosInstance.post(`member/board`, args)).data;
     },
   });
-
-  const userRole = board?.BoardMembers.find(
-    (m) => m.User.email === profile.email
-  )?.memberRole;
 
   const deleteBoardMutation = useMutation({
     mutationFn: async (boardId: number) => {
@@ -102,10 +102,6 @@ const SettingsPage = () => {
     );
   };
 
-  if (!board) {
-    return <></>;
-  }
-
   async function handleAddMember({ email, memberRole }: HandleAddMemberData) {
     const newMember = await addMemberMutation.mutateAsync({
       boardId: board!.id,
@@ -115,9 +111,58 @@ const SettingsPage = () => {
     dispatch(addBoardMember(newMember));
   }
 
+  async function handleChangeBoardName() {
+    const name = editedName;
+    await updateBoardMutation.mutateAsync({ id: board!.id, name });
+    dispatch(updateBoard({ ...board!, name }));
+    setEditingName(false);
+  }
+
+  if (!board) {
+    return <></>;
+  }
+
+  const userRole = board?.BoardMembers.find(
+    (m) => m.User.email === profile.email
+  )?.memberRole;
+
   return (
     <div className="py-4 px-8 flex-1">
-      <h1>{board.name}'s Settings</h1>
+      <h1>Board Settings</h1>
+      <div className="mt-2">
+        {isEditingName ? (
+          <>
+            <FormInput
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+            />
+            <div className="mt-2">
+              <Button
+                onClick={() => setEditingName(false)}
+                $variant="neutral"
+                className="mr-4"
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleChangeBoardName}>Save</Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2>
+              {board.name}{" "}
+              <EditBoxLineIcon
+                onClick={() => {
+                  setEditingName(true);
+                  setEditedName(board.name);
+                }}
+                className="inline mb-2 cursor-pointer"
+                size={18}
+              />
+            </h2>
+          </>
+        )}
+      </div>
       <div className="mt-8">
         <MemberList
           members={board.BoardMembers}
