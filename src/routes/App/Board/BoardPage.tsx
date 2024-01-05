@@ -55,7 +55,7 @@ const BoardPage = () => {
   return (
     <>
       <div className="relative flex w-full h-full max-w-[100vw]">
-        <div className="flex relative bg-white">
+        <div className="flex relative bg-white bg-opacity-90">
           <div
             className={`relative flex-none border-2 border-t-0 border-gray-200 h-full transition-all ${
               openSidebar

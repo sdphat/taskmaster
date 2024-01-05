@@ -56,7 +56,7 @@ const AppLayout = () => {
     <div className="h-screen flex flex-col">
       <div
         ref={navBarRef}
-        className="flex bg-white opacity-90 items-center w-full gap-x-4 px-4 py-4 border-2 border-gray-200"
+        className="flex bg-white bg-opacity-90 items-center w-full gap-x-4 px-4 py-4 border-2 border-gray-200"
       >
         <Link className="ml-2" to={ROUTES.APP}>
           <img src={appIconWithText} alt="" />
@@ -91,7 +91,7 @@ const AppLayout = () => {
           {openAccountDropdown && (
             <div
               style={{ top: navBarHeight }}
-              className="absolute right-4 w-80 
+              className="absolute z-50 right-4 w-80 
             rounded-md border-2 bg-white border-gray-300 
             shadow-md py-2"
             >
