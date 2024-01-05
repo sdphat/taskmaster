@@ -10,6 +10,7 @@ import Button from "../../../../components/Button";
 import CameraIcon from "remixicon-react/CameraLineIcon";
 import { ChangeEvent, useRef, useState } from "react";
 import FormInputError from "../../../../components/FormInputError";
+import useRemoveAttachmentMutation from "../../../../hooks/useRemoveAttachmentMutation";
 
 export interface BoardOptionDropdownProps {
   anchor: HTMLElement;
@@ -36,7 +37,7 @@ const BoardOptionPanel = ({
 };
 
 interface SetBackgroundPanelProps {
-  backgroundUrl: string;
+  backgroundUrl?: string;
   onSetBackground: (file: File) => Promise<void> | void;
   onRemoveBackground: () => Promise<void> | void;
 }
@@ -79,28 +80,43 @@ const SetBackgroundPanel = ({
           accept="image/png,image/jpeg"
           className="hidden"
         />
-        <img
-          src={backgroundUrl}
-          alt=""
-          className="w-full h-36 object-cover object-center"
-        />
-        <div
-          onClick={() => {
-            fileInputRef.current?.click();
-          }}
-          className="absolute inset-0 grid place-items-center group-hover:opacity-60 opacity-0 bg-gray-200 transition-all"
-        >
-          <CameraIcon className="" size={36} />
-        </div>
+        {backgroundUrl ? (
+          <>
+            <img
+              src={backgroundUrl}
+              alt=""
+              className="w-full h-36 object-cover object-center"
+            />
+            <div
+              onClick={() => {
+                fileInputRef.current?.click();
+              }}
+              className="absolute inset-0 grid place-items-center group-hover:opacity-60 opacity-0 bg-gray-200 transition-all"
+            >
+              <CameraIcon className="" size={36} />
+            </div>
+          </>
+        ) : (
+          <Button
+            className="mx-4"
+            onClick={() => {
+              fileInputRef.current?.click();
+            }}
+          >
+            Add background
+          </Button>
+        )}
       </div>
       <FormInputError className="mx-4">{error}</FormInputError>
-      <Button
-        onClick={onRemoveBackground}
-        $variant="danger"
-        className="mx-4 mt-2"
-      >
-        Remove background
-      </Button>
+      {backgroundUrl && (
+        <Button
+          onClick={onRemoveBackground}
+          $variant="danger"
+          className="mx-4 mt-2"
+        >
+          Remove background
+        </Button>
+      )}
     </div>
   );
 };
@@ -119,12 +135,13 @@ const BoardOptionDropdown = ({
       backgroundUrl,
     }: {
       id: number;
-      backgroundUrl: string;
+      backgroundUrl: string | undefined;
     }) => {
       return (await axiosInstance.put(`/board/${id}`, { backgroundUrl })).data;
     },
   });
   const sendAttachmentMutation = useSendAttachmentMutation();
+  const removeAttachmentMutation = useRemoveAttachmentMutation();
   const { panelStack, currentPanel, goBack, pushPanel } =
     usePanelStack<PanelType>({
       rootPanel: { panelType: "options", title: "Options" },
@@ -135,31 +152,33 @@ const BoardOptionDropdown = ({
   };
 
   const handleSetBackground = async (file: File) => {
-    const { url } = await sendAttachmentMutation.mutateAsync({ file });
+    const attachment = await sendAttachmentMutation.mutateAsync({ file });
     await updateBoardBgMutation.mutateAsync({
       id: board!.id,
-      backgroundUrl: url,
+      backgroundUrl: attachment.url,
     });
 
     // For type safe purpose
     if (!board) {
       return;
     }
-    dispatch(updateBoard({ ...board, backgroundUrl: url }));
+    dispatch(updateBoard({ ...board, background: attachment }));
   };
 
   const handleRemoveBackground = async () => {
-    // const { url } = await sendAttachmentMutation.mutateAsync({ file });
-    // await updateBoardBgMutation.mutateAsync({
-    //   id: board!.id,
-    //   backgroundUrl: url,
-    // });
+    if (!board?.background) {
+      return;
+    }
 
-    // // For type safe purpose
-    // if (!board) {
-    //   return;
-    // }
-    // dispatch(updateBoard({ ...board, backgroundUrl: url }));
+    await removeAttachmentMutation.mutateAsync({
+      url: board.background.url,
+    });
+
+    // For type safe purpose
+    if (!board) {
+      return;
+    }
+    dispatch(updateBoard({ ...board, background: undefined }));
   };
 
   if (!board) {
@@ -184,9 +203,9 @@ const BoardOptionDropdown = ({
       )}
       {currentPanel.panelType === "setBackground" && (
         <SetBackgroundPanel
-          backgroundUrl={board.backgroundUrl}
-          onRemoveBackground={() => {}}
+          backgroundUrl={board.background?.url}
           onSetBackground={handleSetBackground}
+          onRemoveBackground={handleRemoveBackground}
         />
       )}
     </DropdownPanel>

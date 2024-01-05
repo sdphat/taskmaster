@@ -208,7 +208,7 @@ const IssuesPage = () => {
   return (
     <div className="flex flex-col self-stretch flex-1 min-w-0">
       <div
-        style={{ backgroundImage: `url(${board.backgroundUrl})` }}
+        style={{ backgroundImage: `url(${board.background?.url})` }}
         className="fixed -z-50 inset-0 bg-no-repeat bg-cover"
       ></div>
       <Header board={board} />

@@ -3,7 +3,7 @@ import axiosInstance from "../../api/axios";
 import { Board } from "../../types/Board";
 import BoardList from "./BoardList";
 
-type BoardSummary = Pick<Board, "name" | "backgroundUrl" | "id">;
+type BoardSummary = Pick<Board, "name" | "background" | "id">;
 
 const App = () => {
   const { data: allBoards } = useQuery({

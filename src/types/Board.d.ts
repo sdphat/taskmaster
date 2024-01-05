@@ -2,7 +2,7 @@ export type BoardRole = "COLLABORATOR" | "ADMIN" | "OBSERVER";
 export class Board {
   id: number;
   name: string;
-  backgroundUrl: string;
+  background?: Attachment;
   BoardColumns: BoardColumn[];
   BoardLabels: Label[];
   BoardMembers: BoardMember[];

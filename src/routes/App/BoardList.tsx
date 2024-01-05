@@ -3,7 +3,7 @@ import { Board } from "../../types/Board";
 import { Link } from "react-router-dom";
 import ROUTES from "../../constants/routes";
 
-type BoardSummary = Pick<Board, "name" | "backgroundUrl" | "id">;
+type BoardSummary = Pick<Board, "name" | "background" | "id">;
 
 interface BoardListProps {
   boards: BoardSummary[] | undefined;
