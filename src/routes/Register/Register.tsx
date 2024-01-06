@@ -13,19 +13,7 @@ import FormInputError from "../../components/FormInputError";
 import FormLabel from "../../components/FormLabel";
 import Link from "../../components/Link";
 import ROUTES from "../../constants/routes";
-
-const isStrongPassword = (password: string) => {
-  return (
-    // Check lowercase presence
-    /[a-z]+/.test(password) &&
-    // Check uppercase presence
-    /[A-Z]+/.test(password) &&
-    // Check number presence
-    /[0-9]+/.test(password) &&
-    // Check length
-    password.length >= 8
-  );
-};
+import { isStrongPassword } from "../../utils/isStrongPassword";
 
 const schema = z
   .object({
@@ -165,7 +153,7 @@ const Register = () => {
             <FormInput
               $hasError={Boolean(errors.confirmPassword?.message)}
               type="password"
-              id="password"
+              id="confirm-password"
               placeholder="Confirm your password"
               {...register("confirmPassword")}
             />

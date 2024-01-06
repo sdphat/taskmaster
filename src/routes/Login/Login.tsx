@@ -94,6 +94,7 @@ const Login = () => {
                 <FormInputError>{message}</FormInputError>
               )}
             />
+            <Link to="/forgot-password">Forgot password</Link>
           </FormField>
           <FormInputError>{errors.root?.message}</FormInputError>
           <div>

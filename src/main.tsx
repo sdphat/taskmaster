@@ -16,6 +16,8 @@ import Login from "./routes/Login/Login.tsx";
 import Register from "./routes/Register/Register.tsx";
 import { store } from "./store.ts";
 import AccountPage from "./routes/Account/AccountPage.tsx";
+import ResetPasswordPage from "./routes/ResetPassword/ResetPasswordPage";
+import ForgotPasswordPage from "./routes/ForgotPassword/ForgotPasswordPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +38,14 @@ const router = createBrowserRouter([
       {
         path: "/invitation",
         element: <InvitationPage />,
+      },
+      {
+        path: "/forgot-password",
+        element: <ForgotPasswordPage />,
+      },
+      {
+        path: "/reset-password",
+        element: <ResetPasswordPage />,
       },
       {
         path: "/app",

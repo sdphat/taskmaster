@@ -29,7 +29,7 @@ const AccountPage = () => {
 
   const updateUserMutation = useMutation({
     mutationFn: async (user: UpdateUserMutationArgs) => {
-      (await axiosInstance.put(`/users`, user)).data;
+      return (await axiosInstance.put(`/users`, user)).data;
     },
   });
 
