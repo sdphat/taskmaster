@@ -19,6 +19,7 @@ import {
 import { useAppDispatch } from "../../../../store";
 import { BoardMember, BoardRole } from "../../../../types/Board";
 import MemberList from "./MemberList";
+import { extractUserRole } from "../../../../helpers/extractUserRole";
 
 interface RemoveMemberMutationArgs {
   boardId: number;
@@ -122,9 +123,7 @@ const SettingsPage = () => {
     return <></>;
   }
 
-  const userRole = board?.BoardMembers.find(
-    (m) => m.User.email === profile.email
-  )?.memberRole;
+  const userRole = extractUserRole(board, profile.email);
 
   return (
     <div className="py-4 px-8 flex-1">
@@ -151,14 +150,16 @@ const SettingsPage = () => {
           <>
             <h2>
               {board.name}{" "}
-              <EditBoxLineIcon
-                onClick={() => {
-                  setEditingName(true);
-                  setEditedName(board.name);
-                }}
-                className="inline mb-2 cursor-pointer"
-                size={18}
-              />
+              {userRole !== "OBSERVER" && (
+                <EditBoxLineIcon
+                  onClick={() => {
+                    setEditingName(true);
+                    setEditedName(board.name);
+                  }}
+                  className="inline mb-2 cursor-pointer"
+                  size={18}
+                />
+              )}
             </h2>
           </>
         )}

@@ -1,6 +1,10 @@
 import DropdownPanel from "../../../../components/DropdownPanel";
 import FormInput from "../../../../components/FormInput";
-import { BoardColumnCardMember, BoardMember } from "../../../../types/Board";
+import {
+  BoardColumnCardMember,
+  BoardMember,
+  BoardRole,
+} from "../../../../types/Board";
 import CheckLineIcon from "remixicon-react/CheckLineIcon";
 
 export interface BoardMembersDropdownProps {
@@ -10,6 +14,7 @@ export interface BoardMembersDropdownProps {
   onRemoveMember: (cardMember: BoardMember) => void;
   members: BoardMember[];
   selectedCardMembers: BoardColumnCardMember[];
+  role: BoardRole;
 }
 
 const BoardMembersDropdown = ({
@@ -19,6 +24,7 @@ const BoardMembersDropdown = ({
   onRemoveMember,
   members,
   selectedCardMembers,
+  role,
 }: BoardMembersDropdownProps) => {
   return (
     <DropdownPanel
@@ -39,11 +45,14 @@ const BoardMembersDropdown = ({
               );
               return (
                 <div
-                  onClick={() =>
+                  onClick={() => {
+                    if (role === "OBSERVER") {
+                      return;
+                    }
                     isMemberIncluded
                       ? onRemoveMember(member)
-                      : onAddMember(member)
-                  }
+                      : onAddMember(member);
+                  }}
                   key={member.id}
                   className="flex items-center hover:bg-gray-300 active:bg-gray-400 transition-all p-1 rounded-sm"
                 >

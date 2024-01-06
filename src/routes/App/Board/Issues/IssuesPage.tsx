@@ -4,6 +4,7 @@ import { useMutation } from "react-query";
 import axiosInstance from "../../../../api/axios";
 import { useBoard } from "../../../../hooks/useBoard";
 import useProfile from "../../../../hooks/useProfile";
+import useRoleContext from "../../../../hooks/useRoleContext";
 import { useUpdateCardMutation } from "../../../../hooks/useUpdateCardMutation";
 import {
   createCard,
@@ -54,6 +55,7 @@ export interface CreateColumnArgs {
 const IssuesPage = () => {
   const { data: briefProfile } = useProfile();
   const { board } = useBoard();
+  const { role } = useRoleContext();
   const dispatch = useAppDispatch();
 
   const moveCardMutation = useMutation({
@@ -202,13 +204,17 @@ const IssuesPage = () => {
     return <></>;
   }
 
+  if (!role) {
+    return <></>;
+  }
+
   return (
     <div className="flex flex-col self-stretch flex-1 min-w-0">
       <div
         style={{ backgroundImage: `url(${board.background?.url})` }}
         className="fixed -z-50 inset-0 bg-no-repeat bg-cover"
       ></div>
-      <Header board={board} />
+      <Header role={role} board={board} />
       <DragDropContext onDragEnd={onCardDragEnd}>
         <div className="flex-1 overflow-auto p-4 flex gap-4 items-start">
           {board?.BoardColumns.map((column) => (

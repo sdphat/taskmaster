@@ -10,9 +10,11 @@ import useSendAttachmentMutation from "../../../../hooks/useSendAttachmentMutati
 import { useUpdateBoardMutation } from "../../../../hooks/useUpdateBoardMutation";
 import { updateBoard } from "../../../../slices/BoardSlice";
 import { useAppDispatch } from "../../../../store";
+import { BoardRole } from "../../../../types/Board";
 
 export interface BoardOptionDropdownProps {
   anchor: HTMLElement;
+  role: BoardRole;
   onCloseDropdown: () => void;
 }
 
@@ -122,6 +124,7 @@ const SetBackgroundPanel = ({
 
 const BoardOptionDropdown = ({
   anchor,
+  role,
   onCloseDropdown,
 }: BoardOptionDropdownProps) => {
   const { board } = useBoard();
@@ -170,6 +173,10 @@ const BoardOptionDropdown = ({
 
   if (!board) {
     return <></>;
+  }
+
+  if (role === "OBSERVER") {
+    return;
   }
 
   return (

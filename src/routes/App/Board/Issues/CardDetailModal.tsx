@@ -19,6 +19,7 @@ import DropdownRemoveAssertion from "../../../../components/DropdownRemoveAssert
 import FormInput from "../../../../components/FormInput";
 import ModalContainer from "../../../../components/ModalContainer";
 import useRefresh from "../../../../hooks/useRefresh";
+import useRoleContext from "../../../../hooks/useRoleContext";
 import useSendAttachmentMutation from "../../../../hooks/useSendAttachmentMutation";
 import { useUpdateCardMutation } from "../../../../hooks/useUpdateCardMutation";
 import {
@@ -146,6 +147,7 @@ export const CardDetailModal = ({
   const dispatch = useAppDispatch();
   const updateCardMutation = useUpdateCardMutation();
   const sendAttachmentMutation = useSendAttachmentMutation();
+  const { role } = useRoleContext();
 
   const createLabelMutation = useMutation({
     async mutationFn(args: CreateLabelArgs): Promise<Label> {
@@ -336,6 +338,10 @@ export const CardDetailModal = ({
     dispatch(removeAttachment(attachment));
   }
 
+  if (!role) {
+    return <></>;
+  }
+
   return (
     <ModalContainer onClose={onClose}>
       <div className="bg-white rounded-lg max-w-5xl w-full pt-4 pb-8 h-max">
@@ -346,8 +352,10 @@ export const CardDetailModal = ({
               <Line leftContent={<HeaderIcon />}>
                 <FormInput
                   defaultValue={card.summary}
+                  disabled={role === "OBSERVER"}
                   onBlur={handleSaveTitle}
-                  className="break-all text-2xl font-semibold flex items-center border-transparent -ml-2"
+                  className="break-all text-2xl font-semibold flex items-center border-transparent -ml-2 
+                  disabled:bg-inherit disabled:cursor-text overflow-hidden whitespace-nowrap text-ellipsis"
                 />
               </Line>
               <Line className="text-sm">
@@ -367,6 +375,7 @@ export const CardDetailModal = ({
             )}
             <CardDescription
               description={card.description}
+              role={role}
               onSave={handleSaveDescription}
               key={card.description}
             />
@@ -378,6 +387,7 @@ export const CardDetailModal = ({
               comments={card.Comments}
               onSave={handleSaveComment}
               profile={profile}
+              role={role}
             />
           </div>
 
@@ -398,24 +408,28 @@ export const CardDetailModal = ({
                 >
                   Labels
                 </ActionButton>
-                <ActionButton
-                  onClick={handleAttachmentBtnClick}
-                  icon={<AttachmentIcon size={actionIconSize} />}
-                >
-                  Attachments
-                </ActionButton>
+                {role !== "OBSERVER" && (
+                  <ActionButton
+                    onClick={handleAttachmentBtnClick}
+                    icon={<AttachmentIcon size={actionIconSize} />}
+                  >
+                    Attachments
+                  </ActionButton>
+                )}
               </div>
             </div>
             <div>
               <h5 className="mb-2 text-[#44546f]">Actions</h5>
               <div className="flex flex-col items-stretch gap-2">
-                <ActionButton
-                  onClick={handleClickRemove}
-                  icon={<RemoveIcon size={actionIconSize} />}
-                  $variant="danger"
-                >
-                  Remove
-                </ActionButton>
+                {role !== "OBSERVER" && (
+                  <ActionButton
+                    onClick={handleClickRemove}
+                    icon={<RemoveIcon size={actionIconSize} />}
+                    $variant="danger"
+                  >
+                    Remove
+                  </ActionButton>
+                )}
               </div>
               {labelDropdownAnchorRef?.current !== undefined && (
                 <LabelsDropdown
@@ -425,6 +439,7 @@ export const CardDetailModal = ({
                   onUnaddLabel={handleUnaddLabel}
                   anchor={labelDropdownAnchorRef.current as HTMLElement}
                   allLabels={board.BoardLabels}
+                  role={role}
                   onAddLabel={handleAddLabel}
                   onRemoveLabel={handleRemoveLabel}
                   selectedLabels={card.Labels}
@@ -433,6 +448,7 @@ export const CardDetailModal = ({
 
               {membersDropdownAnchorRef.current !== undefined && (
                 <BoardMembersDropdown
+                  role={role}
                   onAddMember={handleAddMember}
                   onRemoveMember={handleRemoveMember}
                   anchor={membersDropdownAnchorRef.current}

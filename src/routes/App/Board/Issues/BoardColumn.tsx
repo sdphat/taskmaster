@@ -9,6 +9,7 @@ import TextArea from "../../../../components/TextArea";
 import { BoardColumn as BoardColumnType } from "../../../../types/Board";
 import BoardCard, { BoardCardProps } from "./BoardCard";
 import BoardColumnOptionDropdown from "./BoardColumnOptionDropdown";
+import useRoleContext from "../../../../hooks/useRoleContext";
 export interface CreateCardArgs {
   boardColumnId: number;
   summary: string;
@@ -30,6 +31,7 @@ const BoardColumn = ({
   const [summary, setSummary] = useState("");
   const [error, setError] = useState("");
   const [optionBtn, setOptionBtn] = useState<HTMLElement>();
+  const { role } = useRoleContext();
 
   const handleCancelAddCard = () => {
     setAddingCard(false);
@@ -125,20 +127,24 @@ const BoardColumn = ({
         )}
       </Droppable>
 
-      {isAddingCard ? (
-        addCardForm
-      ) : (
-        <div className="mt-2">
-          <Button
-            onClick={() => setAddingCard(true)}
-            $variant="ghost"
-            $shape="rect"
-            className="w-full flex items-center text-sm"
-          >
-            <AddLineIcon className="mr-2" size={20}></AddLineIcon>{" "}
-            <span className="text-[#44546f] font-semibold">Add a card</span>
-          </Button>
-        </div>
+      {role !== "OBSERVER" && (
+        <>
+          {isAddingCard ? (
+            addCardForm
+          ) : (
+            <div className="mt-2">
+              <Button
+                onClick={() => setAddingCard(true)}
+                $variant="ghost"
+                $shape="rect"
+                className="w-full flex items-center text-sm"
+              >
+                <AddLineIcon className="mr-2" size={20}></AddLineIcon>{" "}
+                <span className="text-[#44546f] font-semibold">Add a card</span>
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

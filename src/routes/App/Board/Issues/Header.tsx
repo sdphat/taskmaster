@@ -1,14 +1,15 @@
 import { useState } from "react";
 import More2FillIcon from "remixicon-react/More2FillIcon";
 import Button from "../../../../components/Button";
-import { Board } from "../../../../types/Board";
+import { Board, BoardRole } from "../../../../types/Board";
 import BoardOptionDropdown from "./BoardOptionDropdown";
 
 export interface HeaderProps {
   board: Board;
+  role: BoardRole;
 }
 
-const Header = ({ board }: HeaderProps) => {
+const Header = ({ board, role }: HeaderProps) => {
   const [optionBtn, setOptionBtn] = useState<HTMLElement>();
 
   return (
@@ -37,6 +38,7 @@ const Header = ({ board }: HeaderProps) => {
         </Button>
         {optionBtn && (
           <BoardOptionDropdown
+            role={role}
             anchor={optionBtn}
             onCloseDropdown={() => setOptionBtn(undefined)}
           />

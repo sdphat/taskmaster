@@ -1,23 +1,29 @@
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import { EventInfo } from "@ckeditor/ckeditor5-utils";
-import ActivityIcon from "remixicon-react/ListUnorderedIcon";
-import Button from "../../../../components/Button";
-import { BoardColumnCard } from "../../../../types/Board";
-import { BriefProfile } from "../../../../types/BriefProfile";
-import { Line } from "./CardDetailModal";
+import { formatDistance } from "date-fns";
 import { useState } from "react";
 import Markdown from "react-markdown";
+import ActivityIcon from "remixicon-react/ListUnorderedIcon";
+import Button from "../../../../components/Button";
 import useCKEditor from "../../../../hooks/useCKEditor";
-import { formatDistance } from "date-fns";
+import { BoardColumnCard, BoardRole } from "../../../../types/Board";
+import { BriefProfile } from "../../../../types/BriefProfile";
+import { Line } from "./CardDetailModal";
 
 export interface CardActivitiesProps {
   profile: BriefProfile;
   comments: BoardColumnCard["Comments"];
   onSave: (comment: string) => void;
+  role: BoardRole;
 }
 
-const CardActivities = ({ profile, comments, onSave }: CardActivitiesProps) => {
+const CardActivities = ({
+  profile,
+  comments,
+  onSave,
+  role,
+}: CardActivitiesProps) => {
   const [commentInput, setCommentInput] = useState("");
   const [openCommentEditor, setOpenCommentEditor] = useState(false);
   const Editor = useCKEditor();
@@ -46,44 +52,46 @@ const CardActivities = ({ profile, comments, onSave }: CardActivitiesProps) => {
       </Line>
       <div>
         <div>
-          <Line
-            className="items-start"
-            leftContent={
-              <img
-                src={profile.avatarUrl}
-                className="w-8 h-8 rounded-full object-cover object-center"
-              />
-            }
-          >
-            {openCommentEditor ? (
-              <div>
-                <div className="max-w-2xl">
-                  <CKEditor
-                    editor={Editor}
-                    onChange={handleCommentInputChange}
-                  />
-                </div>
-                <div className="mt-2">
-                  <div className="space-x-2">
-                    <Button onClick={handleSaveComment} $variant="primary">
-                      Save
-                    </Button>
-                    <Button onClick={handleCancelComment} $variant="ghost">
-                      Cancel
-                    </Button>
+          {role !== "OBSERVER" && (
+            <Line
+              className="items-start"
+              leftContent={
+                <img
+                  src={profile.avatarUrl}
+                  className="w-8 h-8 rounded-full object-cover object-center"
+                />
+              }
+            >
+              {openCommentEditor ? (
+                <div>
+                  <div className="max-w-2xl">
+                    <CKEditor
+                      editor={Editor}
+                      onChange={handleCommentInputChange}
+                    />
+                  </div>
+                  <div className="mt-2">
+                    <div className="space-x-2">
+                      <Button onClick={handleSaveComment} $variant="primary">
+                        Save
+                      </Button>
+                      <Button onClick={handleCancelComment} $variant="ghost">
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <Button
-                $variant="neutral"
-                className="font-semibold w-full h-16 inline-flex items-start"
-                onClick={() => setOpenCommentEditor(true)}
-              >
-                Write a comment...
-              </Button>
-            )}
-          </Line>
+              ) : (
+                <Button
+                  $variant="neutral"
+                  className="font-semibold w-full h-16 inline-flex items-start"
+                  onClick={() => setOpenCommentEditor(true)}
+                >
+                  Write a comment...
+                </Button>
+              )}
+            </Line>
+          )}
         </div>
       </div>
       <div className="mt-3 space-y-2">

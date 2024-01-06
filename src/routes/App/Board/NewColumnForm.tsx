@@ -2,6 +2,7 @@ import React, { FormEvent, useState } from "react";
 import FormInput from "../../../components/FormInput";
 import Button from "../../../components/Button";
 import CloseLineIcon from "remixicon-react/CloseLineIcon";
+import useRoleContext from "../../../hooks/useRoleContext";
 
 export interface NewColumnFormProps {
   onAddColumn: (columnName: string) => Promise<void> | void;
@@ -10,6 +11,7 @@ export interface NewColumnFormProps {
 const NewColumnForm = ({ onAddColumn }: NewColumnFormProps) => {
   const [columnName, setColumnName] = useState("");
   const [formOpen, setFormOpen] = useState(false);
+  const { role } = useRoleContext();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,6 +21,10 @@ const NewColumnForm = ({ onAddColumn }: NewColumnFormProps) => {
       setFormOpen(false);
     }
   };
+
+  if (role === "OBSERVER") {
+    return <></>;
+  }
 
   return (
     <div className="flex-none w-80">

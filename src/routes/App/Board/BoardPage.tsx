@@ -14,12 +14,16 @@ import { setBoard } from "../../../slices/BoardSlice";
 import { useAppDispatch } from "../../../store";
 import { Board } from "../../../types/Board";
 import NavLink from "./NavLink";
+import { RoleProvider } from "../../../hooks/useRoleContext";
+import { extractUserRole } from "../../../helpers/extractUserRole";
+import useProfile from "../../../hooks/useProfile";
 
 const BoardPage = () => {
   const { board } = useBoard();
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const [isForbidden, setIsForbidden] = useState(false);
+  const { data: profile } = useProfile();
   useQuery<Board>(
     ["issues", id],
     async () => {
@@ -53,8 +57,10 @@ const BoardPage = () => {
     return <></>;
   }
 
+  const userRole = extractUserRole(board, profile.email);
+
   return (
-    <>
+    <RoleProvider role={userRole}>
       <div className="relative flex w-full h-full max-w-[100vw]">
         <div className="flex relative bg-white bg-opacity-90">
           <div
@@ -118,7 +124,7 @@ const BoardPage = () => {
         )}
         <Outlet />
       </div>
-    </>
+    </RoleProvider>
   );
 };
 

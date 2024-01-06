@@ -6,7 +6,7 @@ import FormField from "../../../../components/FormField";
 import FormInput from "../../../../components/FormInput";
 import FormLabel from "../../../../components/FormLabel";
 import usePanelStack from "../../../../hooks/usePanelStack";
-import { Label } from "../../../../types/Board";
+import { BoardRole, Label } from "../../../../types/Board";
 import { bgTextColorPair, getTextColor } from "../../../../utils/labelUtils";
 
 export interface LabelsModalProps {
@@ -19,10 +19,12 @@ export interface LabelsModalProps {
   onSaveEditLabel: (label: Label) => Promise<void> | void;
   onCloseDropdown: () => void;
   anchor: HTMLElement;
+  role: BoardRole;
 }
 interface LabelListPanelProps {
   selectedLabels: Label[];
   allLabels: Label[];
+  role: BoardRole;
   onAddLabel: (label: Label) => void;
   onUnaddLabel: (label: Label) => void;
   onClickEditLabel: (label: Label) => void;
@@ -36,6 +38,7 @@ const LabelListPanel = ({
   onClickCreateNewLabel,
   onClickEditLabel,
   selectedLabels,
+  role,
 }: LabelListPanelProps) => (
   <>
     <div className="px-4 pb-2 mt-4 flex-1 min-w-0 overflow-y-auto">
@@ -47,11 +50,15 @@ const LabelListPanel = ({
           >
             <input
               checked={selectedLabels.some((l) => l.id === label.id)}
-              onChange={() =>
+              disabled={role === "OBSERVER"}
+              onChange={() => {
+                if (role === "OBSERVER") {
+                  return;
+                }
                 selectedLabels.some((l) => l.id === label.id)
                   ? onUnaddLabel(label)
-                  : onAddLabel(label)
-              }
+                  : onAddLabel(label);
+              }}
               id={String(label.id)}
               type="checkbox"
               className="w-4 h-4"
@@ -69,22 +76,26 @@ const LabelListPanel = ({
             </span>
           </label>
 
-          <Button
-            onClick={() => onClickEditLabel(label)}
-            $shape="square"
-            $variant="ghost"
-          >
-            <EditIcon size={18} />
-          </Button>
+          {role !== "OBSERVER" && (
+            <Button
+              onClick={() => onClickEditLabel(label)}
+              $shape="square"
+              $variant="ghost"
+            >
+              <EditIcon size={18} />
+            </Button>
+          )}
         </div>
       ))}
-      <Button
-        $variant="neutral"
-        className="font-semibold block w-full mt-3 h-9 py-0"
-        onClick={onClickCreateNewLabel}
-      >
-        Create a new label
-      </Button>
+      {role !== "OBSERVER" && (
+        <Button
+          $variant="neutral"
+          className="font-semibold block w-full mt-3 h-9 py-0"
+          onClick={onClickCreateNewLabel}
+        >
+          Create a new label
+        </Button>
+      )}
     </div>
   </>
 );
@@ -183,6 +194,7 @@ const LabelsDropdown = ({
   allLabels,
   selectedLabels,
   anchor,
+  role,
   onCloseDropdown,
   onAddLabel,
   onRemoveLabel,
@@ -190,9 +202,10 @@ const LabelsDropdown = ({
   onSaveEditLabel,
   onUnaddLabel,
 }: LabelsModalProps) => {
-  const { panelStack, currentPanel, goBack, pushPanel } = usePanelStack<PanelType>({
-    rootPanel: { panelType: "list", title: "Labels" },
-  });
+  const { panelStack, currentPanel, goBack, pushPanel } =
+    usePanelStack<PanelType>({
+      rootPanel: { panelType: "list", title: "Labels" },
+    });
   const [editingLabel, setEditingLabel] = useState<Label | undefined>(
     undefined
   );
@@ -227,6 +240,7 @@ const LabelsDropdown = ({
                 panelType: "create",
               })
             }
+            role={role}
           />
         )}
 

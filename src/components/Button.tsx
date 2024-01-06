@@ -1,4 +1,4 @@
-import { HTMLAttributes } from "react";
+import { ButtonHTMLAttributes } from "react";
 import tw from "tailwind-styled-components";
 
 export type ButtonVariant =
@@ -9,7 +9,7 @@ export type ButtonVariant =
   | "danger";
 export type ButtonShape = "square" | "rect";
 
-export interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   $variant?: ButtonVariant;
   $shape?: ButtonShape;
 }

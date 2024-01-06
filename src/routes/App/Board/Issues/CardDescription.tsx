@@ -7,13 +7,19 @@ import { useState } from "react";
 import MarkdownComponent from "react-markdown";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import useCKEditor from "../../../../hooks/useCKEditor";
+import { BoardRole } from "../../../../types/Board";
 
 export interface CardDescriptionProps {
   description: string;
   onSave: (description: string) => void;
+  role: BoardRole;
 }
 
-const CardDescription = ({ description, onSave }: CardDescriptionProps) => {
+const CardDescription = ({
+  description,
+  onSave,
+  role,
+}: CardDescriptionProps) => {
   const [editingDescription, setEditingDescription] = useState(description);
   const [openDescriptionEditor, setOpenDescriptionEditor] = useState(false);
   const Editor = useCKEditor();
@@ -41,7 +47,7 @@ const CardDescription = ({ description, onSave }: CardDescriptionProps) => {
       <Line leftContent={<DescriptionIcon />}>
         <div className="flex flex-1 items-center justify-between">
           <h3>Description</h3>
-          {!openDescriptionEditor && (
+          {!openDescriptionEditor && role !== "OBSERVER" && (
             <Button
               $variant="neutral"
               onClick={() => setOpenDescriptionEditor(true)}
