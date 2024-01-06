@@ -5,38 +5,22 @@ import {
   ReactNode,
   useRef,
 } from "react";
+import { useMutation } from "react-query";
+import { toast } from "react-toastify";
 import AttachmentIcon from "remixicon-react/Attachment2Icon";
-import ChecklistIcon from "remixicon-react/CheckboxLineIcon";
 import RemoveIcon from "remixicon-react/DeleteBinLineIcon";
-import WatchIcon from "remixicon-react/EyeLineIcon";
-import CoverIcon from "remixicon-react/ImageLineIcon";
 import LabelIcon from "remixicon-react/PriceTag3LineIcon";
-import ShareIcon from "remixicon-react/ShareLineIcon";
-import DatesIcon from "remixicon-react/TimeLineIcon";
 import MemberIcon from "remixicon-react/UserLineIcon";
 import HeaderIcon from "remixicon-react/Window2LineIcon";
 import tw from "tailwind-styled-components";
+import axiosInstance from "../../../../api/axios";
 import Button, { ButtonProps } from "../../../../components/Button";
+import DropdownRemoveAssertion from "../../../../components/DropdownRemoveAssertion";
 import FormInput from "../../../../components/FormInput";
 import ModalContainer from "../../../../components/ModalContainer";
 import useRefresh from "../../../../hooks/useRefresh";
-import {
-  Attachment,
-  Board,
-  BoardColumn,
-  BoardColumnCard,
-  BoardColumnCardMember,
-  BoardMember,
-  Label,
-} from "../../../../types/Board";
-import { BriefProfile } from "../../../../types/BriefProfile";
-import CardActivities from "./CardActivities";
-import CardDescription from "./CardDescription";
-import CardLabels from "./CardLabels";
-import LabelsDropdown from "./LabelsDropdown";
-import axiosInstance from "../../../../api/axios";
-import { useMutation } from "react-query";
-import { useAppDispatch } from "../../../../store";
+import useSendAttachmentMutation from "../../../../hooks/useSendAttachmentMutation";
+import { useUpdateCardMutation } from "../../../../hooks/useUpdateCardMutation";
 import {
   addCardMember,
   createLabel,
@@ -48,14 +32,25 @@ import {
   updateLabel,
   updateLabelList,
 } from "../../../../slices/BoardSlice";
+import { useAppDispatch } from "../../../../store";
+import {
+  Attachment,
+  Board,
+  BoardColumn,
+  BoardColumnCard,
+  BoardColumnCardMember,
+  BoardMember,
+  Label,
+} from "../../../../types/Board";
+import { BriefProfile } from "../../../../types/BriefProfile";
 import BoardMembersDropdown from "./BoardMembersDropdown";
-import CardMembers from "./CardMembers";
-import DropdownRemoveAssertion from "../../../../components/DropdownRemoveAssertion";
+import CardActivities from "./CardActivities";
 import CardAttachmentDropdown from "./CardAttachmentDropdown";
-import { useUpdateCardMutation } from "../../../../hooks/useUpdateCardMutation";
 import CardAttachments from "./CardAttachments";
-import { toast } from "react-toastify";
-import useSendAttachmentMutation from "../../../../hooks/useSendAttachmentMutation";
+import CardDescription from "./CardDescription";
+import CardLabels from "./CardLabels";
+import CardMembers from "./CardMembers";
+import LabelsDropdown from "./LabelsDropdown";
 export interface CardDetailModalProps {
   board: Board;
   card: BoardColumnCard;
@@ -391,9 +386,6 @@ export const CardDetailModal = ({
             <div>
               <h5 className="mb-2 text-[#44546f]">Add to card</h5>
               <div className="flex flex-col items-stretch gap-2">
-                <ActionButton icon={<WatchIcon size={actionIconSize} />}>
-                  Watch
-                </ActionButton>
                 <ActionButton
                   onClick={handleMembersBtnClick}
                   icon={<MemberIcon size={actionIconSize} />}
@@ -406,29 +398,17 @@ export const CardDetailModal = ({
                 >
                   Labels
                 </ActionButton>
-                <ActionButton icon={<ChecklistIcon size={actionIconSize} />}>
-                  Checklist
-                </ActionButton>
-                <ActionButton icon={<DatesIcon size={actionIconSize} />}>
-                  Dates
-                </ActionButton>
                 <ActionButton
                   onClick={handleAttachmentBtnClick}
                   icon={<AttachmentIcon size={actionIconSize} />}
                 >
                   Attachments
                 </ActionButton>
-                <ActionButton icon={<CoverIcon size={actionIconSize} />}>
-                  Cover
-                </ActionButton>
               </div>
             </div>
             <div>
               <h5 className="mb-2 text-[#44546f]">Actions</h5>
               <div className="flex flex-col items-stretch gap-2">
-                <ActionButton icon={<ShareIcon size={actionIconSize} />}>
-                  Share
-                </ActionButton>
                 <ActionButton
                   onClick={handleClickRemove}
                   icon={<RemoveIcon size={actionIconSize} />}
