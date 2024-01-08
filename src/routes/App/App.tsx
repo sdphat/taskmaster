@@ -15,7 +15,7 @@ const App = () => {
 
   return (
     <div className="py-4">
-      {allBoards ? (
+      {(allBoards && allBoards.length) ? (
         <BoardList boards={allBoards} title="All Boards" />
       ) : (
         <div className="px-4 grid place-items-center bg-gray-300 h-60 font-medium text-lg">

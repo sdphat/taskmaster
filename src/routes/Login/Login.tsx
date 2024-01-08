@@ -1,5 +1,6 @@
 import { ErrorMessage } from "@hookform/error-message";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useGoogleLogin } from "@react-oauth/google";
 import { AxiosError, HttpStatusCode } from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -36,6 +37,23 @@ const Login = () => {
   });
 
   const navigate = useNavigate();
+  const loginWithGoogle = useGoogleLogin({
+    flow: "auth-code",
+    async onSuccess(codeResponse) {
+      const response = await axiosInstance.post("/auth/login/google", {
+        code: codeResponse.code,
+      });
+      if (response.status === HttpStatusCode.Conflict) {
+        setError("root", {
+          message:
+            "Login failed. An account with this email was created before.",
+          type: "custom",
+        });
+        return;
+      }
+      navigate("/app", { replace: true });
+    },
+  });
 
   const onSubmit: SubmitHandler<LoginInput> = async (data) => {
     try {
@@ -114,9 +132,12 @@ const Login = () => {
                 <div className="w-5">
                   <img src={googleIcon} className="h-5 w-5" />
                 </div>
-                <div className="flex-grow font-bold text-sm">
+                <button
+                  onClick={loginWithGoogle}
+                  className="flex-grow font-bold text-sm"
+                >
                   Continue with Google
-                </div>
+                </button>
               </div>
             </button>
           </div>

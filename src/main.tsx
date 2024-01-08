@@ -18,6 +18,7 @@ import { store } from "./store.ts";
 import AccountPage from "./routes/Account/AccountPage.tsx";
 import ResetPasswordPage from "./routes/ResetPassword/ResetPasswordPage";
 import ForgotPasswordPage from "./routes/ForgotPassword/ForgotPasswordPage.tsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const router = createBrowserRouter([
   {
@@ -83,9 +84,11 @@ const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <ToastContainer position="bottom-left" />
-    </QueryClientProvider>
+    <GoogleOAuthProvider clientId="782330352466-tlqul3omvdcjhj5pkjd561uk9eftti6g.apps.googleusercontent.com">
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <ToastContainer position="bottom-left" />
+      </QueryClientProvider>
+    </GoogleOAuthProvider>
   </Provider>
 );
