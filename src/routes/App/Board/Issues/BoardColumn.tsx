@@ -108,7 +108,7 @@ const BoardColumn = ({
       </div>
 
       <Droppable droppableId={String(column.id)}>
-        {(provided, snapshot) => (
+        {(provided, _snapshot) => (
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}

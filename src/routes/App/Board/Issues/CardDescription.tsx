@@ -63,6 +63,7 @@ const CardDescription = ({
             <div className="max-w-2xl">
               <CKEditor
                 data={description}
+                // @ts-expect-error unable to type Editor
                 editor={Editor}
                 onChange={handleDescriptionChange}
               />

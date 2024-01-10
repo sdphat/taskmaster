@@ -66,6 +66,7 @@ const CardActivities = ({
                 <div>
                   <div className="max-w-2xl">
                     <CKEditor
+                      // @ts-expect-error unable to type Editor
                       editor={Editor}
                       onChange={handleCommentInputChange}
                     />

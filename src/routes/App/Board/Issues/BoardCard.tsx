@@ -13,7 +13,7 @@ const BoardCard = ({
 }: BoardCardProps) => {
   return (
     <Draggable draggableId={String(boardCard.id)} index={indexInColumn}>
-      {(provided, snapshot) => (
+      {(provided, _snapshot) => (
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}

@@ -1,7 +1,7 @@
-import React, { FormEvent, useState } from "react";
-import FormInput from "../../../components/FormInput";
-import Button from "../../../components/Button";
+import { FormEvent, useState } from "react";
 import CloseLineIcon from "remixicon-react/CloseLineIcon";
+import Button from "../../../components/Button";
+import FormInput from "../../../components/FormInput";
 import useRoleContext from "../../../hooks/useRoleContext";
 
 export interface NewColumnFormProps {
