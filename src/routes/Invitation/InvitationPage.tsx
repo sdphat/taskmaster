@@ -8,7 +8,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { MoonLoader } from "react-spinners";
-import axiosInstance from "../../api/axios";
+import axiosInstance from "../../Api/axios";
 import AppIcon from "../../assets/app-icon-with-text.svg";
 import ROUTES from "../../constants/routes";
 

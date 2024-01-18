@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 import { z } from "zod";
-import axiosInstance from "../../api/axios";
+import axiosInstance from "../../Api/axios";
 import appIcon from "../../assets/app-icon-with-text.svg";
 import FormField from "../../components/FormField";
 import FormInput from "../../components/FormInput";

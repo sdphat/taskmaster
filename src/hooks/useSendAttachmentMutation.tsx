@@ -1,5 +1,5 @@
 import { useMutation } from "react-query";
-import axiosInstance from "../api/axios";
+import axiosInstance from "../Api/axios";
 import { Attachment } from "../types/Board";
 
 export interface SendAttachmentMutationArgs {
