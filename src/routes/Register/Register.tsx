@@ -4,7 +4,7 @@ import { HttpStatusCode } from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
-import axiosInstance from "../../Api/axios";
+import axiosInstance from "../../api/axios";
 import appIcon from "../../assets/app-icon-with-text.svg";
 import googleIcon from "../../assets/google-icon.svg";
 import FormField from "../../components/FormField";

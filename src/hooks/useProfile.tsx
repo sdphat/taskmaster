@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import axiosInstance from "../Api/axios";
+import axiosInstance from "../api/axios";
 import { BriefProfile } from "../types/BriefProfile";
 
 async function getBriefProfile(): Promise<BriefProfile> {

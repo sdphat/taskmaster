@@ -10,7 +10,7 @@ import FormInputError from "../../components/FormInputError";
 import FormLabel from "../../components/FormLabel";
 import { isStrongPassword } from "../../utils/isStrongPassword";
 import { useMutation } from "react-query";
-import axiosInstance from "../../Api/axios";
+import axiosInstance from "../../api/axios";
 import { HttpStatusCode } from "axios";
 import { useEffect } from "react";
 

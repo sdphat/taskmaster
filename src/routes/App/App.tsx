@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import axiosInstance from "../../Api/axios";
+import axiosInstance from "../../api/axios";
 import { Board } from "../../types/Board";
 import BoardList from "./BoardList";
 

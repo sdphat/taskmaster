@@ -2,7 +2,7 @@ import { AxiosError, HttpStatusCode } from "axios";
 import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import axiosInstance from "../../Api/axios";
+import axiosInstance from "../../api/axios";
 import appIconWithText from "../../assets/app-icon-with-text.svg";
 import Button from "../../components/Button";
 import ROUTES from "../../constants/routes";

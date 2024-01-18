@@ -13,7 +13,7 @@ import LabelIcon from "remixicon-react/PriceTag3LineIcon";
 import MemberIcon from "remixicon-react/UserLineIcon";
 import HeaderIcon from "remixicon-react/Window2LineIcon";
 import tw from "tailwind-styled-components";
-import axiosInstance from "../../../../Api/axios";
+import axiosInstance from "../../../../api/axios";
 import Button, { ButtonProps } from "../../../../components/Button";
 import DropdownRemoveAssertion from "../../../../components/DropdownRemoveAssertion";
 import FormInput from "../../../../components/FormInput";

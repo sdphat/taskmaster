@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import EditBoxLineIcon from "remixicon-react/EditBoxLineIcon";
-import axiosInstance from "../../../../Api/axios";
+import axiosInstance from "../../../../api/axios";
 import Button from "../../../../components/Button";
 import DropdownRemoveAssertion from "../../../../components/DropdownRemoveAssertion";
 import FormInput from "../../../../components/FormInput";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd";
 import { useMutation } from "react-query";
-import axiosInstance from "../../../../Api/axios";
+import axiosInstance from "../../../../api/axios";
 import { useBoard } from "../../../../hooks/useBoard";
 import useProfile from "../../../../hooks/useProfile";
 import useRoleContext from "../../../../hooks/useRoleContext";

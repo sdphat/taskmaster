@@ -1,6 +1,6 @@
 import { useMutation } from "react-query";
 import { BoardColumnCard, Label } from "../types/Board";
-import axiosInstance from "../Api/axios";
+import axiosInstance from "../api/axios";
 
 export interface UpdateCardArgs {
   cardId: number;

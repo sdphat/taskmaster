@@ -1,5 +1,5 @@
 import { useMutation } from "react-query";
-import axiosInstance from "../Api/axios";
+import axiosInstance from "../api/axios";
 
 export interface UseRemoveAttachmentMutationArgs {
   url: string;

@@ -3,7 +3,7 @@ import { ChangeEvent, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 import CameraIcon from "remixicon-react/CameraLineIcon";
-import axiosInstance from "../../Api/axios";
+import axiosInstance from "../../api/axios";
 import Button from "../../components/Button";
 import FormField from "../../components/FormField";
 import FormInput from "../../components/FormInput";
