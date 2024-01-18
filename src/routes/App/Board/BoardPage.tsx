@@ -7,7 +7,7 @@ import ArrowRightLine from "remixicon-react/ArrowRightLineIcon";
 import FileCopyLine from "remixicon-react/FileCopyLineIcon";
 import FlashlightFill from "remixicon-react/FlashlightFillIcon";
 import Settings4Line from "remixicon-react/Settings4LineIcon";
-import axiosInstance from "../../../api/axios";
+import axiosInstance from "../../../Api/axios";
 import ROUTES from "../../../constants/routes";
 import { useBoard } from "../../../hooks/useBoard";
 import { setBoard } from "../../../slices/BoardSlice";
