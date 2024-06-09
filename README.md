@@ -6,6 +6,12 @@
 
 Taskmaster is an issues tracking app that helps developer tracking bugs, collaborating with co-workers seamlessly.
 
+## Screenshot
+![Login page](screenshots/LoginPage.png)
+![Board](screenshots/Board.png)
+![Card](screenshots/Card.png)
+![Project settings](screenshots/ProjectSettings.png)
+
 ## Features
 - Authentication: Login, register, login with google, forgot password
 - Invite other users to your board by sending invitation link via email
