@@ -1,12 +1,8 @@
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import { EventInfo } from "@ckeditor/ckeditor5-utils";
 import { formatDistance } from "date-fns";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import Markdown from "react-markdown";
 import ActivityIcon from "remixicon-react/ListUnorderedIcon";
 import Button from "../../../../components/Button";
-import useCKEditor from "../../../../hooks/useCKEditor";
 import { BoardColumnCard, BoardRole } from "../../../../types/Board";
 import { BriefProfile } from "../../../../types/BriefProfile";
 import { Line } from "./CardDetailModal";
@@ -26,13 +22,9 @@ const CardActivities = ({
 }: CardActivitiesProps) => {
   const [commentInput, setCommentInput] = useState("");
   const [openCommentEditor, setOpenCommentEditor] = useState(false);
-  const Editor = useCKEditor();
 
-  function handleCommentInputChange(
-    _event: EventInfo<string, unknown>,
-    editor: ClassicEditor
-  ): void {
-    setCommentInput(editor.getData());
+  function handleCommentInputChange(e: ChangeEvent<HTMLTextAreaElement>): void {
+    setCommentInput(e.currentTarget.value);
   }
 
   function handleSaveComment(): void {
@@ -63,11 +55,10 @@ const CardActivities = ({
               }
             >
               {openCommentEditor ? (
-                <div>
-                  <div className="max-w-2xl">
-                    <CKEditor
-                      // @ts-expect-error unable to type Editor
-                      editor={Editor}
+                <div className="w-full">
+                  <div className="w-full">
+                    <textarea
+                      className="w-full border-gray-600 border rounded focus:outline-none p-2"
                       onChange={handleCommentInputChange}
                     />
                   </div>

@@ -1,12 +1,8 @@
-import { CKEditor } from "@ckeditor/ckeditor5-react";
 import DescriptionIcon from "remixicon-react/AlignLeftIcon";
 import Button from "../../../../components/Button";
-import { EventInfo } from "@ckeditor/ckeditor5-utils";
 import { Line } from "./CardDetailModal";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import MarkdownComponent from "react-markdown";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import useCKEditor from "../../../../hooks/useCKEditor";
 import { BoardRole } from "../../../../types/Board";
 
 export interface CardDescriptionProps {
@@ -22,13 +18,10 @@ const CardDescription = ({
 }: CardDescriptionProps) => {
   const [editingDescription, setEditingDescription] = useState(description);
   const [openDescriptionEditor, setOpenDescriptionEditor] = useState(false);
-  const Editor = useCKEditor();
 
-  function handleDescriptionChange(
-    _event: EventInfo<string, unknown>,
-    editor: ClassicEditor
+  function handleDescriptionChange(e: ChangeEvent<HTMLTextAreaElement>
   ): void {
-    setEditingDescription(editor.getData());
+    setEditingDescription(e.currentTarget.value);
   }
 
   function handleSaveDescription(): void {
@@ -59,12 +52,11 @@ const CardDescription = ({
       </Line>
       <Line className="mt-1">
         {openDescriptionEditor ? (
-          <div>
-            <div className="max-w-2xl">
-              <CKEditor
-                data={description}
-                // @ts-expect-error unable to type Editor
-                editor={Editor}
+          <div className="w-full">
+            <div className="w-full">
+              <textarea
+                className="w-full border-gray-600 border rounded focus:outline-none p-2"
+                value={editingDescription}
                 onChange={handleDescriptionChange}
               />
             </div>
